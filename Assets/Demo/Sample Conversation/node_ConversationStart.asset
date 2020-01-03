@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded6b0894bb64e908568720d29bc96b2, type: 3}
+  m_Name: node_ConversationStart
+  m_EditorClassIdentifier: 
+  speakerImage: {fileID: 0}
+  speakerName: Dialogue System
+  ignoreOnceRead: 0
+  responseLabel: '[ Return... ]'
+  responses:
+  - {fileID: 11400000, guid: 93ea0c56850cd4f4d84b5ddf2c3a25fa, type: 2}
+  - {fileID: 11400000, guid: c9a9f86cc282f914a9db4d273b825d0b, type: 2}
+  - {fileID: 11400000, guid: 98557e6c844923b4ab5f1fa810808f01, type: 2}
+  activateChoice: {fileID: 0}
+  storyChoice: {fileID: 0}
+  defaultSpeakerDialogue: This is the start of the conversation.
+  speakerDialogueWhenTrue: 
