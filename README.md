@@ -1,4 +1,4 @@
-﻿﻿# Dialogue System
+# Dialogue System
 
 A ScriptableObject based dialogue system with speaker images and flavorable dialogue.
 
