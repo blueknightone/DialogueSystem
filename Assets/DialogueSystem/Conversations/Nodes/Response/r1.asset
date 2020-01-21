@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f4e04d870d24587a58cf034052fc289, type: 3}
-  m_Name: d1
+  m_Script: {fileID: 11500000, guid: 50f32111c4ee92e428a5856537ef5905, type: 3}
+  m_Name: r1
   m_EditorClassIdentifier: 
-  speakerText: Testing
-  speakerImage: {fileID: 10900, guid: 0000000000000000f000000000000000, type: 0}
-  backgroundSpeakerImages: []
+  responseText: Test
+  dialogueCondition: {fileID: 11400000, guid: 942f8d514a18c9f4ea420b211deb8222, type: 2}

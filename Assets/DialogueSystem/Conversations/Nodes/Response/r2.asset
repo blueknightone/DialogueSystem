@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2c79cdc56a84a95961883265253f07d, type: 3}
-  m_Name: ShowFlavorText
+  m_Script: {fileID: 11500000, guid: 50f32111c4ee92e428a5856537ef5905, type: 3}
+  m_Name: r2
   m_EditorClassIdentifier: 
-  initialValue: 0
+  responseText: Test
+  dialogueCondition: {fileID: 0}

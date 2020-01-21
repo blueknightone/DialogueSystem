@@ -1,32 +1,50 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace lastmilegames.DialogueSystem.Nodes
 {
-    public abstract class BaseNode : ScriptableObject
+    public abstract class BaseNode
     {
-        public Rect nodeRect;
-        public bool isDragged;
+        public readonly ConnectionPoint InPoint;
+        public readonly ConnectionPoint OutPoint;
+        public Rect Rect;
 
-        protected string AssetDataPath;
+        protected readonly string AssetDataPath;
 
+        private readonly GUIStyle _selectedNodeStyle;
+        private readonly GUIStyle _defaultNodeStyle;
 
-        private void OnEnable()
+        private readonly Action<BaseNode> OnRemoveNode;
+        private GUIStyle _style;
+        private bool _isSelected;
+        private bool _isDragged;
+
+        protected BaseNode(Rect rect,
+            GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle inPointStyle, GUIStyle outPointStyle,
+            Action<ConnectionPoint> onClickInPoint, Action<ConnectionPoint> onClickOutPoint,
+            Action<BaseNode> onClickRemoveNode)
         {
             AssetDataPath = "Assets/DialogueSystem/Conversations/";
-        }
-
-        protected BaseNode(Vector2 position, float width, float height)
-        {
-            nodeRect = new Rect(position.x, position.y, width, height);
+            Rect = rect;
+            _style = nodeStyle;
+            _defaultNodeStyle = nodeStyle;
+            _selectedNodeStyle = selectedStyle;
+            InPoint = new ConnectionPoint(this, ConnectionPointType.In, inPointStyle, onClickInPoint);
+            OutPoint = new ConnectionPoint(this, ConnectionPointType.Out, outPointStyle, onClickOutPoint);
+            OnRemoveNode = onClickRemoveNode;
         }
 
         private void Drag(Vector2 delta)
         {
-            nodeRect.position += delta;
+            Rect.position += delta;
         }
 
-        public abstract void Draw(int id);
+        public virtual void Draw(int id)
+        {
+            InPoint.Draw();
+            OutPoint.Draw();
+        }
 
         public bool ProcessEvents(Event e)
         {
@@ -35,22 +53,33 @@ namespace lastmilegames.DialogueSystem.Nodes
                 case EventType.MouseDown:
                     if (e.button == 0)
                     {
-                        if (nodeRect.Contains(e.mousePosition))
+                        if (Rect.Contains(e.mousePosition))
                         {
-                            isDragged = true;
+                            _isDragged = true;
                             GUI.changed = true;
+                            _isSelected = true;
+                            _style = _selectedNodeStyle;
                         }
                         else
                         {
                             GUI.changed = true;
+                            _isSelected = false;
+                            _style = _defaultNodeStyle;
                         }
                     }
+
+                    if (e.button == 1 && Rect.Contains(e.mousePosition))
+                    {
+                        ProcessContextMenu();
+                        e.Use();
+                    }
+
                     break;
                 case EventType.MouseUp:
-                    isDragged = false;
+                    _isDragged = false;
                     break;
                 case EventType.MouseDrag:
-                    if (e.button == 0 && isDragged)
+                    if (e.button == 0 && _isDragged)
                     {
                         Drag(e.delta);
                         e.Use();
@@ -63,6 +92,17 @@ namespace lastmilegames.DialogueSystem.Nodes
             return false;
         }
 
-        protected abstract void ProcessContextMenu();
+        private void ProcessContextMenu()
+        {
+            GenericMenu genericMenu = new GenericMenu();
+            genericMenu.AddItem(new GUIContent("Delete Node"), false, OnClickRemoveNode);
+            genericMenu.ShowAsContext();
+        }
+
+        private void OnClickRemoveNode()
+        {
+            if (OnRemoveNode == null) return;
+            OnRemoveNode(this);
+        }
     }
 }

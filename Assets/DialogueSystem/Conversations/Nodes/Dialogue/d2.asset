@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f4e04d870d24587a58cf034052fc289, type: 3}
-  m_Name: d1
+  m_Name: d2
   m_EditorClassIdentifier: 
-  speakerText: Testing
-  speakerImage: {fileID: 10900, guid: 0000000000000000f000000000000000, type: 0}
+  speakerText: 
+  speakerImage: {fileID: 0}
   backgroundSpeakerImages: []
