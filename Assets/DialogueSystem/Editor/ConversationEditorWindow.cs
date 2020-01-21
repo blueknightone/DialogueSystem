@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using lastmilegames.DialogueSystem.Nodes;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace lastmilegames.DialogueSystem
@@ -27,7 +26,10 @@ namespace lastmilegames.DialogueSystem
         private ConnectionPoint _selectedInPoint;
         private ConnectionPoint _selectedOutPoint;
 
-        [MenuItem("Dialogue System/Visual Editor")]
+        private Vector2 _offset;
+        private Vector2 _drag;
+
+        [MenuItem("Window/Conversation Editor")]
         private static void ShowWindow()
         {
             ConversationEditorWindow window = GetWindow<ConversationEditorWindow>();
@@ -88,13 +90,44 @@ namespace lastmilegames.DialogueSystem
 
         private void OnGUI()
         {
+            DrawGrid(20, 0.2f, Color.gray);
+            DrawGrid(100, 0.4f, Color.gray);
             DrawNodes();
             DrawConnections();
+
+            DrawConnectionLine(Event.current);
 
             ProcessNodeEvents(Event.current);
             ProcessEvents(Event.current);
 
             if (GUI.changed) Repaint();
+        }
+
+        private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor)
+        {
+            int widthDivs = Mathf.CeilToInt(position.width / gridSpacing);
+            int heightDivs = Mathf.CeilToInt(position.height / gridSpacing);
+
+            Handles.BeginGUI();
+            Handles.color = new Color(gridColor.r, gridColor.g, gridColor.b, gridOpacity);
+
+            _offset += _drag * 0.5f;
+            Vector3 newOffset = new Vector3(_offset.x % gridSpacing, _offset.y % gridSpacing, 0);
+
+            for (int i = 0; i < widthDivs; i++)
+            {
+                Handles.DrawLine(new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset,
+                    new Vector3(gridSpacing * i, position.height, 0f) + newOffset);
+            }
+
+            for (int j = 0; j < heightDivs; j++)
+            {
+                Handles.DrawLine(new Vector3(-gridSpacing, gridSpacing * j, 0) + newOffset,
+                    new Vector3(position.width, gridSpacing * j, 0f) + newOffset);
+            }
+
+            Handles.color = Color.white;
+            Handles.EndGUI();
         }
 
         private void DrawNodes()
@@ -119,12 +152,53 @@ namespace lastmilegames.DialogueSystem
             }
         }
 
+        private void DrawConnectionLine(Event e)
+        {
+            if (_selectedInPoint != null && _selectedOutPoint == null)
+            {
+                Handles.DrawBezier(
+                    _selectedInPoint.Rect.center,
+                    e.mousePosition,
+                    _selectedInPoint.Rect.center + Vector2.left * 50f,
+                    e.mousePosition - Vector2.left * 50f,
+                    Color.white,
+                    null,
+                    2f
+                );
+
+                GUI.changed = true;
+            }
+
+            if (_selectedOutPoint != null && _selectedInPoint == null)
+            {
+                Handles.DrawBezier(
+                    _selectedOutPoint.Rect.center,
+                    e.mousePosition,
+                    _selectedOutPoint.Rect.center - Vector2.left * 50f,
+                    e.mousePosition + Vector2.left * 50f,
+                    Color.white,
+                    null,
+                    2f
+                );
+                GUI.changed = true;
+            }
+        }
+
         private void ProcessEvents(Event e)
         {
+            _drag = Vector2.zero;
+
             switch (e.type)
             {
                 case EventType.MouseDown:
                     if (e.button == 1) ProcessContextMenu(e.mousePosition);
+                    break;
+                case EventType.MouseDrag:
+                    if (e.button == 0)
+                    {
+                        OnDrag(e.delta);
+                    }
+
                     break;
             }
         }
@@ -139,6 +213,20 @@ namespace lastmilegames.DialogueSystem
                     if (guiChanged) GUI.changed = true;
                 }
             }
+        }
+
+        private void OnDrag(Vector2 delta)
+        {
+            if (_nodes == null) return;
+
+            _drag = delta;
+
+            foreach (BaseNode node in _nodes)
+            {
+                node.Drag(delta);
+            }
+
+            GUI.changed = true;
         }
 
         private void ProcessContextMenu(Vector2 mousePosition)
