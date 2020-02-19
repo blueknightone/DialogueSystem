@@ -1,4 +1,5 @@
-﻿using UnityEditor.Experimental.GraphView;
+﻿using lastmilegames.DialogueSystem.Nodes;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,12 +23,26 @@ namespace lastmilegames.DialogueSystem
             Insert(0, grid);
             grid.StretchToParentSize();
 
-            // TODO: AddElement(GenerateEntryPointNode());
+            AddElement(GenerateEntryPointNode());
         }
 
-        private GraphElement GenerateEntryPointNode()
+        private BaseNode GenerateEntryPointNode()
         {
-            throw new System.NotImplementedException();
+            BaseNode node = new BaseNode()
+            {
+                title = "Start",
+            };
+            Debug.Log($"Starting Point GUID: {node.GUID}");
+
+            node.GeneratePort("Next", Direction.Output);
+            node.capabilities &= ~Capabilities.Deletable; // Node cannot be deleted
+
+            node.RefreshExpandedState();
+            node.RefreshPorts();
+            
+            node.SetPosition(new Rect(100, 200, 100, 150));
+
+            return node;
         }
     }
 }
