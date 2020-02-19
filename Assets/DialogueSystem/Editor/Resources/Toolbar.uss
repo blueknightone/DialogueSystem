@@ -1,0 +1,19 @@
+﻿.unity-toolbar {
+    background-color: #2a2a2a;
+}
+
+.unity-toolbar-button, .unity-toolbar-toggle {
+    background-color: rgba(0, 0, 0, 0);
+    color: #c4c4c4;
+}
+
+.unity-toolbar .unity-base-text-field__input {
+    border-top-color: #c4c4c4;
+    border-right-color: #c4c4c4;
+    border-bottom-color: #c4c4c4;
+    border-left-color: #c4c4c4;
+}
+
+.unity-toolbar-button:hover, .unity-toolbar-toggle:hover {
+    background-color: #4d4d4d;
+}

@@ -10,5 +10,8 @@ namespace lastmilegames.DialogueSystem
 
         [SerializeField] private DialogueCondition dialogueCondition;
         public DialogueCondition DialogueCondition => dialogueCondition;
+
+        [SerializeField] private Dialogue nextDialogue;
+        public Dialogue NextDialogue => nextDialogue;
     }
 }
