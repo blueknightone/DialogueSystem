@@ -1,7 +1,25 @@
-DialogueNode #title {
-    background-color: rgb(34, 136, 150);
+DialogueNode {
+    max-width: 300px;
+    min-width: 250px;
 }
 
-ConditionNode #title {
-    background-color: rgb(150, 96, 39);
+TextField {
+    background-color: #3a3a3a;
+    flex-direction: column;
+    padding: 5px;
+}
+
+#unity-text-input {
+    white-space: normal;
+}
+
+Port.port {
+    height: auto;
+}
+
+Port TextField {
+    max-width: 145px;
+    min-width: 85px;
+    max-height: none;
+    white-space: normal;
 }

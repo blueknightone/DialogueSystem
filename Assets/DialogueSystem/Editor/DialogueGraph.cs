@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using lastmilegames.DialogueSystem.Nodes;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -9,9 +10,9 @@ namespace lastmilegames.DialogueSystem
     public class DialogueGraph : EditorWindow
     {
         private Toolbar _toolbar;
-        private GraphView _graphView;
+        private DialogueGraphView _graphView;
         private MiniMap _miniMap;
-        private bool _miniMapEnabled = true;
+        private bool _miniMapEnabled;
         private string _fileName = "";
 
         [MenuItem("Dialogue System/Open Visual Editor")]
@@ -48,22 +49,19 @@ namespace lastmilegames.DialogueSystem
         {
             _toolbar = new Toolbar();
             _toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
-            ToolbarButton addDialogueButton = new ToolbarButton(() =>
-            {
-                /* TODO: Wire up node creation */
-            })
-            {
-                text = "Add Dialogue"
-            };
 
-            _toolbar.Add(addDialogueButton);
-            _toolbar.Add(new ToolbarButton(() => { /* TODO: Wire up node creation */ })
+            _toolbar.Add(new ToolbarButton(() =>
             {
-                text = "Add Condition"
-            });
+                _graphView.CreateNode("Dialogue", NodeType.Dialogue, position.size);
+            }) {text = "Add Dialogue"});
             
+            _toolbar.Add(new ToolbarButton(() =>
+            {
+                _graphView.CreateNode("Condition", NodeType.Condition, position.size);
+            }) {text = "Add Condition"});
+
             _toolbar.Add(new ToolbarSpacer() {flex = true});
-            
+
             TextField fileNameTextField = new TextField("FileName");
             fileNameTextField.style.minWidth = 150;
             fileNameTextField.labelElement.style.minWidth = 0;
@@ -71,15 +69,21 @@ namespace lastmilegames.DialogueSystem
             fileNameTextField.MarkDirtyRepaint();
             fileNameTextField.RegisterValueChangedCallback(evt => _fileName = evt.newValue);
             _toolbar.Add(fileNameTextField);
-            _toolbar.Add(new ToolbarButton(() => { /* TODO: Wire up Save operation */ })
+            _toolbar.Add(new ToolbarButton(() =>
+            {
+                /* TODO: Wire up Save operation */
+            })
             {
                 text = "Save Asset"
             });
-            _toolbar.Add(new ToolbarButton(() => { /* TODO: Wire up Load operation */ })
+            _toolbar.Add(new ToolbarButton(() =>
+            {
+                /* TODO: Wire up Load operation */
+            })
             {
                 text = "Load Asset"
             });
-            
+
             ToolbarToggle toggleMiniMap = new ToolbarToggle {text = "Toggle MiniMap"};
             toggleMiniMap.RegisterValueChangedCallback(evt => { _miniMapEnabled = evt.newValue; });
             _toolbar.Add(toggleMiniMap);
