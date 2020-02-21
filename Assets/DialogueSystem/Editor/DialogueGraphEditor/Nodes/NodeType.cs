@@ -1,4 +1,4 @@
-﻿namespace lastmilegames.DialogueSystem.Nodes
+﻿namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
     public enum NodeType
     {

@@ -1,0 +1,47 @@
+DialogueNode {
+    min-width: 250px;
+}
+
+DialogueNode #unity-content,
+ConditionNode #condition-properties-foldout #unity-content{
+    margin-left: 0;
+}
+
+DialogueNode #output Port {
+    height: auto;
+}
+
+DialogueNode #output .unity-base-field{
+    max-width: 200px;
+    max-height: none;
+    white-space: normal;
+}
+
+ConditionNode ObjectField {
+    width: 200px;
+}
+
+ConditionNode ObjectField Label {
+    padding-bottom: 5px;
+}
+
+ConditionNode Toggle Label{
+    flex-grow: 1;
+}
+
+TextField, ObjectField {
+    flex-direction: column;
+}
+
+TextField, ObjectField, Toggle {
+    background-color: #3a3a3a;
+    padding: 5px;
+}
+
+#unity-text-input {
+    white-space: normal;
+}
+
+/*Port.port {*/
+/*    height: auto;*/
+/*}*/

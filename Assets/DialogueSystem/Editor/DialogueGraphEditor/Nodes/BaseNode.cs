@@ -3,7 +3,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace lastmilegames.DialogueSystem.Nodes
+namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
     public abstract class BaseNode : Node
     {

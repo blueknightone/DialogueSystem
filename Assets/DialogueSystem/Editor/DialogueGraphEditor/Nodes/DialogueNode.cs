@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,7 +8,7 @@ using UnityEngine.UIElements;
  * TODO: Note for building UI
  * If a DialogueNode has no ports OR if the port has no edges, display option to end conversation.
  */
-namespace lastmilegames.DialogueSystem.Nodes
+namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
     class DialogueNode : BaseNode
     {
@@ -28,14 +29,20 @@ namespace lastmilegames.DialogueSystem.Nodes
             Button addChoiceButton = new Button(AddChoicePort) {text = "Add Choice"};
             titleButtonContainer.Add(addChoiceButton);
             
+            Foldout contentFoldout = new Foldout
+            {
+                text = "Dialogue Properties"
+            };
+            contentContainer.Add(contentFoldout);
+            
             TextField speakerNameField = new TextField("Speaker Name");
             speakerNameField.RegisterValueChangedCallback(evt =>
             {
                 SpeakerName = evt.newValue;
                 UpdateTitle();
             });
-            contentContainer.Add(speakerNameField);
-            contentContainer.Add(new VisualElement {name = "divider"});
+            contentFoldout.contentContainer.Add(speakerNameField);
+            contentFoldout.contentContainer.Add(new VisualElement {name = "divider"});
 
             TextField dialogueTextField = new TextField("Dialogue Text");
             dialogueTextField.RegisterValueChangedCallback(evt =>
@@ -43,8 +50,8 @@ namespace lastmilegames.DialogueSystem.Nodes
                 DialogueText = evt.newValue;
                 UpdateTitle();
             });
-            contentContainer.Add(dialogueTextField);
-            contentContainer.Add(new VisualElement {name = "divider"});
+            contentFoldout.contentContainer.Add(dialogueTextField);
+            contentFoldout.contentContainer.Add(new VisualElement {name = "divider"});
 
             RefreshExpandedState();
             RefreshPorts();
@@ -55,16 +62,31 @@ namespace lastmilegames.DialogueSystem.Nodes
         {
             Port port = this.GeneratePort(this,"Out", Direction.Output, type:typeof(string));
             
+            Foldout portToolsFoldout = new Foldout()
+            {
+                text = "Port Options",
+                value = false
+            };
+            port.contentContainer.Add(portToolsFoldout);
+            
             TextField choiceText = new TextField
             {
                 name = string.Empty,
                 value = "Choice Text"
             };
-            port.contentContainer.Add(choiceText);
+            portToolsFoldout.contentContainer.Add(choiceText);
+            
+            ObjectField dialogueToToggle = new ObjectField("Condition to Toggle")
+            {
+                objectType = typeof(DialogueCondition),
+                allowSceneObjects = false
+            };
+            portToolsFoldout.contentContainer.Add(dialogueToToggle);
             
             Button deleteButton = new Button(() => OnClickRemovePort?.Invoke(this, port))
             {
-                text = "X"
+                text = "X",
+                tooltip = "Delete Choice"
             };
             port.contentContainer.Add(deleteButton);
             
