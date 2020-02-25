@@ -11,6 +11,10 @@ DialogueNode #output Port {
     height: auto;
 }
 
+DialogueNode #output Port Foldout {
+    flex-grow: 1;
+}
+
 DialogueNode #output .unity-base-field{
     max-width: 200px;
     max-height: none;

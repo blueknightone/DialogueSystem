@@ -102,7 +102,15 @@ namespace lastmilegames.DialogueSystem
                 RemoveElement(targetEdges.First());
             }
 
+            if (node is DialogueNode dialogueNode)
+            {
+                List<ChoicePort> choicePorts = dialogueNode.ChoicePorts;
+                choicePorts.Remove(choicePorts.Find(x => x.NodePort == port));
+            }
+
             node.outputContainer.Remove(port);
+            node.RefreshExpandedState();
+            node.RefreshPorts();
         }
     }
 }

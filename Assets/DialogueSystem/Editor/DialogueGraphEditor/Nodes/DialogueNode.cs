@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,6 +14,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
     {
         public string DialogueText { get; set; }
         public string SpeakerName { get; set; }
+        public List<ChoicePort> ChoicePorts { get; set; }= new List<ChoicePort>();
 
         public DialogueNode(Action<Node, Port> onClickRemovePort) : base(onClickRemovePort)
         {
@@ -23,18 +24,18 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             // Add node fields
             BuildNodeControls();
         }
-        
+
         private void BuildNodeControls()
         {
             Button addChoiceButton = new Button(AddChoicePort) {text = "Add Choice"};
             titleButtonContainer.Add(addChoiceButton);
-            
+
             Foldout contentFoldout = new Foldout
             {
                 text = "Dialogue Properties"
             };
             contentContainer.Add(contentFoldout);
-            
+
             TextField speakerNameField = new TextField("Speaker Name");
             speakerNameField.RegisterValueChangedCallback(evt =>
             {
@@ -60,37 +61,12 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
         private void AddChoicePort()
         {
-            Port port = this.GeneratePort(this,"Out", Direction.Output, type:typeof(string));
-            
-            Foldout portToolsFoldout = new Foldout()
-            {
-                text = "Port Options",
-                value = false
-            };
-            port.contentContainer.Add(portToolsFoldout);
-            
-            TextField choiceText = new TextField
-            {
-                name = string.Empty,
-                value = "Choice Text"
-            };
-            portToolsFoldout.contentContainer.Add(choiceText);
-            
-            ObjectField dialogueToToggle = new ObjectField("Condition to Toggle")
-            {
-                objectType = typeof(DialogueCondition),
-                allowSceneObjects = false
-            };
-            portToolsFoldout.contentContainer.Add(dialogueToToggle);
-            
-            Button deleteButton = new Button(() => OnClickRemovePort?.Invoke(this, port))
-            {
-                text = "X",
-                tooltip = "Delete Choice"
-            };
-            port.contentContainer.Add(deleteButton);
-            
-            outputContainer.Add(port);
+            ChoicePort choicePort = new ChoicePort(
+                GeneratePort(this, "Out", Direction.Output, type: typeof(string)),
+                OnClickRemovePort);
+
+            ChoicePorts.Add(choicePort);
+            outputContainer.Add(choicePort.NodePort);
             RefreshExpandedState();
             RefreshPorts();
         }
@@ -106,12 +82,12 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
                 string speakerName;
                 if (string.IsNullOrWhiteSpace(SpeakerName))
                 {
-                    speakerName = "NO-SPK"; 
+                    speakerName = "NO-SPK";
                 }
                 else
                 {
-                    speakerName = SpeakerName.Length <= 10 
-                        ? SpeakerName 
+                    speakerName = SpeakerName.Length <= 10
+                        ? SpeakerName
                         : SpeakerName.Substring(0, 10) + "...";
                 }
 
@@ -126,7 +102,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
                         ? DialogueText
                         : DialogueText.Substring(0, 12) + "...";
                 }
-                
+
                 title = $"{speakerName} : {dialogueText}";
             }
         }
