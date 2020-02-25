@@ -1,4 +1,4 @@
-﻿using lastmilegames.DialogueSystem.Nodes;
+﻿using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;

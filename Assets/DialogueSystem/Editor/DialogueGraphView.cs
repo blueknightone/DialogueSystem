@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using lastmilegames.DialogueSystem.Nodes;
+using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
