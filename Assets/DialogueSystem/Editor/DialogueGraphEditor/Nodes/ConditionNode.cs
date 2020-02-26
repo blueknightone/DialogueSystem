@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -46,7 +44,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
             Toggle conditionObjectToggle = new Toggle("Initial Value")
             {
-                bindingPath = "initialValue",
+                bindingPath = "initialValue"
             };
             
             TextField newConditionName = new TextField()
