@@ -163,7 +163,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void CreateConditionNodes()
         {
-            // TODO
+            foreach (ConditionNodeData nodeData in _containerCache.ConditionNodes)
+            {
+                ConditionNode tempNode = _targetGraphView.CreateConditionNode(nodeData);
+                _targetGraphView.AddElement(tempNode);
+            }
         }
 
         private void ConnectNodes()

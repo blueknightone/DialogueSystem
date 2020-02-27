@@ -12,14 +12,29 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
     {
         public DialogueCondition ConditionToTest;
         private ObjectField _conditionObjectField;
+        private Foldout _contentFoldout;
+        private Toggle _conditionObjectToggle;
+        private TextField _conditionNameTextField;
+        private Button _createConditionAssetButton;
         private const string CONDITION_ASSET_PATH = "Assets/DialogueSystem/Conditions";
 
         public ConditionNode()
         {
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
             BuildNodeControls();
+            UpdateNodeFields();
         }
-        
+
+        public ConditionNode(ConditionNodeData nodeData)
+        {
+            ConditionToTest = nodeData.conditionToTest;
+
+            styleSheets.Add(Resources.Load<StyleSheet>("Node"));
+
+            BuildNodeControls();
+            UpdateNodeFields();
+        }
+
         private void BuildNodeControls()
         {
             Port ifTruePort = GeneratePort(this, "If True", Direction.Output);
@@ -27,89 +42,59 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
             Port ifFalsePort = GeneratePort(this, "If False", Direction.Output);
             ifFalsePort.portColor = Color.red;
-            
-            Foldout contentFoldout = new Foldout
-            {
-                text = "Condition Properties",
-                name = "condition-properties-foldout"
-            };
-            contentContainer.Add(contentFoldout);
-            VisualElement contentFoldoutContentContainer = contentFoldout.contentContainer;
+
+            _contentFoldout = new Foldout {text = "Condition Properties", name = "condition-properties-foldout"};
+            contentContainer.Add(_contentFoldout);
 
             _conditionObjectField = new ObjectField("Condition Object")
-            {
-                objectType = typeof(DialogueCondition),
-                allowSceneObjects = false
-            };
+                {objectType = typeof(DialogueCondition), allowSceneObjects = false, value = ConditionToTest};
 
-            Toggle conditionObjectToggle = new Toggle("Initial Value")
-            {
-                bindingPath = "initialValue"
-            };
-            
-            TextField newConditionName = new TextField
-            {
-                value = "New Condition"
-            };
+            _conditionObjectToggle = new Toggle("Initial Value") {bindingPath = "initialValue"};
 
-            Button newConditionAssetButton = new Button(() => CreateConditionAsset(newConditionName.value))
-            {
-                text = "New Condition"
-            };
-            
+            _conditionNameTextField = new TextField {value = "New Condition"};
+
+            _createConditionAssetButton = new Button(() => CreateConditionAsset(_conditionNameTextField.value))
+                {text = "New Condition"};
             _conditionObjectField.RegisterValueChangedCallback(evt =>
             {
-                DialogueCondition dc = evt.newValue as DialogueCondition;
-                ConditionToTest = dc;
-                if (dc != null)
+                ConditionToTest = evt.newValue as DialogueCondition;
+                _conditionObjectToggle.Unbind();
+                
+                if (ConditionToTest != null)
                 {
-                    title = dc.name;
-                    
-                    SerializedObject so = new SerializedObject(dc);
-                    conditionObjectToggle.Bind(so);
-
-                    if (!contentFoldoutContentContainer.Contains(conditionObjectToggle))
-                    {
-                        contentFoldoutContentContainer.Add(conditionObjectToggle);
-                    }
-
-                    if (contentFoldoutContentContainer.Contains(newConditionName))
-                    {
-                        contentFoldoutContentContainer.Remove(newConditionName);
-                    }
-
-                    if (contentFoldoutContentContainer.Contains(newConditionAssetButton))
-                    {
-                        contentFoldoutContentContainer.Remove(newConditionAssetButton);
-                    }
-                }
-                else
-                {
-                    title = "Condition";
-                    conditionObjectToggle.Unbind();
-                    if (contentFoldoutContentContainer.Contains(conditionObjectToggle))
-                    {
-                        contentFoldoutContentContainer.Remove(conditionObjectToggle);
-                    }
-
-                    if (!contentFoldoutContentContainer.Contains(newConditionName))
-                    {
-                        contentFoldoutContentContainer.Add(newConditionName);
-                    }
-
-                    if (!contentFoldoutContentContainer.Contains(newConditionAssetButton))
-                    {
-                        contentFoldoutContentContainer.Add(newConditionAssetButton);
-                    }
+                    SerializedObject so = new SerializedObject(ConditionToTest);
+                    _conditionObjectToggle.Bind(so);
                 }
 
-                RefreshExpandedState();
+                UpdateNodeFields();
             });
+        }
 
+        private void UpdateNodeFields()
+        {
+            title = ConditionToTest == null ? "Condition" : ConditionToTest.name;
+            
+            VisualElement contentFoldoutContentContainer = _contentFoldout.contentContainer;
+            // Remove all children
+            for (int i = 0; i < contentFoldoutContentContainer.childCount; i++)
+            {
+                contentFoldoutContentContainer.RemoveAt(i);
+            }
 
             contentFoldoutContentContainer.Add(_conditionObjectField);
-            contentFoldoutContentContainer.Add(newConditionName);
-            contentFoldoutContentContainer.Add(newConditionAssetButton);
+
+            if (ConditionToTest == null)
+            {
+                contentFoldoutContentContainer.Add(_conditionNameTextField);
+                contentFoldoutContentContainer.Add(_createConditionAssetButton);
+            }
+            else
+            {
+                contentFoldoutContentContainer.Add(_conditionObjectToggle);
+            }
+
+            RefreshPorts();
+            RefreshExpandedState();
         }
 
         private void CreateConditionAsset(string assetName)
@@ -121,8 +106,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
                 string parentFolder = string.Join("/", folderNames, 0, folderNames.Length - 1);
                 AssetDatabase.CreateFolder(parentFolder, folderNames.Last());
             }
-            
+
             AssetDatabase.CreateAsset(condition, $"{CONDITION_ASSET_PATH}/{assetName}.asset");
+            _conditionNameTextField.value = "New Condition";
             _conditionObjectField.value = condition;
         }
     }

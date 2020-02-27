@@ -76,6 +76,12 @@ namespace lastmilegames.DialogueSystem
             return node;
         }
 
+        public ConditionNode CreateConditionNode(ConditionNodeData nodeData)
+        {
+            ConditionNode node = new ConditionNode(nodeData);
+            return node;
+        }
+
         public DialogueNode CreateDialogueNode(Vector2 windowSize)
         {
             DialogueNode node = new DialogueNode(OnClickRemoveOutputPort);
