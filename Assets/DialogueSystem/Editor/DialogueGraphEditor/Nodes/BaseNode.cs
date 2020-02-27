@@ -8,8 +8,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
     public abstract class BaseNode : Node
     {
         public readonly Vector2 DefaultNodeSize = new Vector2(150, 200);
-        public string GUID { get; }
-        
+        public string GUID { get; set; }
+
         protected readonly Action<Node, Port> OnClickRemovePort;
 
         /// <summary>

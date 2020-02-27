@@ -10,16 +10,28 @@ using UnityEngine.UIElements;
  */
 namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
-    class DialogueNode : BaseNode
+    public class DialogueNode : BaseNode
     {
-        public string DialogueText { get; set; }
-        public string SpeakerName { get; set; }
-        public List<ChoicePort> ChoicePorts { get; set; }= new List<ChoicePort>();
+        public string DialogueText { get; private set; }
+        public string SpeakerName { get; private set; }
+        public List<ChoicePort> ChoicePorts { get; set; } = new List<ChoicePort>();
 
         public DialogueNode(Action<Node, Port> onClickRemovePort) : base(onClickRemovePort)
         {
             // Associate stylesheet
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
+
+            // Add node fields
+            BuildNodeControls();
+        }
+
+        public DialogueNode(Action<Node, Port> onClickRemovePort, DialogueNodeData nodeData) : base(onClickRemovePort)
+        {
+            // Associate stylesheet
+            styleSheets.Add(Resources.Load<StyleSheet>("Node"));
+
+            DialogueText = nodeData.dialogueText;
+            SpeakerName = nodeData.speakerName;
 
             // Add node fields
             BuildNodeControls();
@@ -36,7 +48,10 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             };
             contentContainer.Add(contentFoldout);
 
-            TextField speakerNameField = new TextField("Speaker Name");
+            TextField speakerNameField = new TextField("Speaker Name")
+            {
+                value = SpeakerName
+            };
             speakerNameField.RegisterValueChangedCallback(evt =>
             {
                 SpeakerName = evt.newValue;
@@ -45,7 +60,10 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             contentFoldout.contentContainer.Add(speakerNameField);
             contentFoldout.contentContainer.Add(new VisualElement {name = "divider"});
 
-            TextField dialogueTextField = new TextField("Dialogue Text");
+            TextField dialogueTextField = new TextField("Dialogue Text")
+            {
+                value = DialogueText
+            };
             dialogueTextField.RegisterValueChangedCallback(evt =>
             {
                 DialogueText = evt.newValue;
@@ -71,40 +89,46 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             RefreshPorts();
         }
 
-        private void UpdateTitle()
+        public void AddChoicePorts(NodeLinkData portData)
         {
-            if (string.IsNullOrWhiteSpace(SpeakerName) && string.IsNullOrWhiteSpace(DialogueText))
+            ChoicePort choicePort = new ChoicePort(
+                GeneratePort(this, "Out", Direction.Output, type: typeof(string)),
+                OnClickRemovePort,
+                portData);
+
+            ChoicePorts.Add(choicePort);
+            outputContainer.Add(choicePort.NodePort);
+            RefreshExpandedState();
+            RefreshPorts();
+        }
+
+        public void UpdateTitle()
+        {
+            string speakerName;
+            if (string.IsNullOrWhiteSpace(SpeakerName))
             {
-                title = "Dialogue";
+                speakerName = "NO-SPK";
             }
             else
             {
-                string speakerName;
-                if (string.IsNullOrWhiteSpace(SpeakerName))
-                {
-                    speakerName = "NO-SPK";
-                }
-                else
-                {
-                    speakerName = SpeakerName.Length <= 10
-                        ? SpeakerName
-                        : SpeakerName.Substring(0, 10) + "...";
-                }
-
-                string dialogueText;
-                if (string.IsNullOrWhiteSpace(DialogueText))
-                {
-                    dialogueText = "NO-DLG";
-                }
-                else
-                {
-                    dialogueText = DialogueText.Length <= 12
-                        ? DialogueText
-                        : DialogueText.Substring(0, 12) + "...";
-                }
-
-                title = $"{speakerName} : {dialogueText}";
+                speakerName = SpeakerName.Length <= 10
+                    ? SpeakerName
+                    : SpeakerName.Substring(0, 10) + "...";
             }
+
+            string dialogueText;
+            if (string.IsNullOrWhiteSpace(DialogueText))
+            {
+                dialogueText = "NO-DLG";
+            }
+            else
+            {
+                dialogueText = DialogueText.Length <= 12
+                    ? DialogueText
+                    : DialogueText.Substring(0, 12) + "...";
+            }
+
+            title = $"{speakerName} : {dialogueText}";
         }
     }
 }

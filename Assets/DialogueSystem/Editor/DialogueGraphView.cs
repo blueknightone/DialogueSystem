@@ -47,10 +47,10 @@ namespace lastmilegames.DialogueSystem
             switch (nodeType)
             {
                 case NodeType.Condition:
-                    AddElement(CreateConditionNode(nodeName, windowSize));
+                    AddElement(CreateConditionNode(windowSize));
                     break;
                 case NodeType.Dialogue:
-                    AddElement(CreateDialogueNode(nodeName, windowSize));
+                    AddElement(CreateDialogueNode(windowSize));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, null);
@@ -69,20 +69,26 @@ namespace lastmilegames.DialogueSystem
             return node;
         }
 
-        private GraphElement CreateConditionNode(string nodeName, Vector2 windowSize)
+        public ConditionNode CreateConditionNode(Vector2 windowSize)
         {
-            ConditionNode node = new ConditionNode {title = nodeName};
+            ConditionNode node = new ConditionNode {title = "Condition"};
             node.SetPosition(new Rect(windowSize / 2f, node.DefaultNodeSize));
             return node;
         }
 
-        private DialogueNode CreateDialogueNode(string nodeName, Vector2 windowSize)
+        public DialogueNode CreateDialogueNode(Vector2 windowSize)
         {
-            DialogueNode node = new DialogueNode(OnClickRemoveOutputPort)
-            {
-                title = nodeName,
-                DialogueText = nodeName,
-            };
+            DialogueNode node = new DialogueNode(OnClickRemoveOutputPort);
+            node.UpdateTitle();
+            node.SetPosition(new Rect(windowSize / 2f, node.DefaultNodeSize));
+
+            return node;
+        }
+
+        public DialogueNode CreateDialogueNode(Vector2 windowSize, DialogueNodeData nodeData)
+        {
+            DialogueNode node = new DialogueNode(OnClickRemoveOutputPort, nodeData);
+            node.UpdateTitle();
             node.SetPosition(new Rect(windowSize / 2f, node.DefaultNodeSize));
 
             return node;

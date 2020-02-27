@@ -7,16 +7,24 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
     public class ChoicePort
     {
-        public string GUID { get; }
-        public Port NodePort { get; }
+        public Port NodePort { get; set; }
         public string ChoiceText { get; set; }
         public DialogueCondition ConditionToToggle { get; set; }
 
         public ChoicePort(Port nodePort, Action<Node, Port> onClickRemovePort)
         {
-            GUID = Guid.NewGuid().ToString();
             NodePort = nodePort;
             
+            nodePort.contentContainer.Add(GenerateDeleteButton(onClickRemovePort));
+            nodePort.contentContainer.Add(GenerateFoldout());
+        }
+
+        public ChoicePort(Port nodePort, Action<Node, Port> onClickRemovePort, NodeLinkData portData)
+        {
+            NodePort = nodePort;
+            ChoiceText = portData.choiceText;
+            ConditionToToggle = portData.dialogueCondition;
+
             nodePort.contentContainer.Add(GenerateDeleteButton(onClickRemovePort));
             nodePort.contentContainer.Add(GenerateFoldout());
         }
@@ -35,19 +43,21 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             Foldout foldout = new Foldout
             {
                 text = "Port Options",
+                name = "ChoicePort",
                 value = false
             };
 
             TextField choiceTextField = new TextField
             {
-                name = string.Empty,
-                value = "Choice Text"
+                name = "ChoiceText",
+                value = ChoiceText
             };
             choiceTextField.RegisterValueChangedCallback(evt => { ChoiceText = evt.newValue; });
             foldout.contentContainer.Add(choiceTextField);
 
             ObjectField dialogueToToggle = new ObjectField("Condition to Toggle")
             {
+                name  = "ConditionToToggle",
                 objectType = typeof(DialogueCondition),
                 allowSceneObjects = false
             };

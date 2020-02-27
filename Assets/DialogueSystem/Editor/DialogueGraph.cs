@@ -1,4 +1,5 @@
-﻿using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
+﻿using lastmilegames.DialogueSystem.DialogueGraphEditor;
+using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -12,6 +13,7 @@ namespace lastmilegames.DialogueSystem
         private Toolbar _toolbar;
         private DialogueGraphView _graphView;
         private MiniMap _miniMap;
+        private GraphSaveUtility _graphSaveUtility;
         private bool _miniMapEnabled;
         private string _fileName = "";
 
@@ -30,6 +32,8 @@ namespace lastmilegames.DialogueSystem
             GenerateToolbar();
             GenerateGraphView();
             GenerateMiniMap();
+            
+            _graphSaveUtility = new GraphSaveUtility(_graphView);
         }
 
         private void OnGUI()
@@ -71,14 +75,14 @@ namespace lastmilegames.DialogueSystem
             _toolbar.Add(fileNameTextField);
             _toolbar.Add(new ToolbarButton(() =>
             {
-                /* TODO: Wire up Save operation */
+                _graphSaveUtility.SaveGraph(fileNameTextField.value);
             })
             {
                 text = "Save Asset"
             });
             _toolbar.Add(new ToolbarButton(() =>
             {
-                /* TODO: Wire up Load operation */
+                _graphSaveUtility.LoadGraph(fileNameTextField.value);
             })
             {
                 text = "Load Asset"
