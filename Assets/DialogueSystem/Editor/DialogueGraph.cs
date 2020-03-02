@@ -51,6 +51,7 @@ namespace lastmilegames.DialogueSystem
 
         private void GenerateToolbar()
         {
+            // TODO: Load asset from item selected in inspector
             _toolbar = new Toolbar();
             _toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
 

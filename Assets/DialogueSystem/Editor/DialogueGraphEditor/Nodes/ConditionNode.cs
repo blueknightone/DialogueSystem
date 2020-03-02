@@ -27,6 +27,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
         public ConditionNode(ConditionNodeData nodeData)
         {
+            GUID = nodeData.guid;
             ConditionToTest = nodeData.conditionToTest;
 
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
@@ -38,9 +39,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         private void BuildNodeControls()
         {
             Port ifTruePort = GeneratePort(this, "If True", Direction.Output);
+            ifTruePort.name = "ifTruePort";
             ifTruePort.portColor = Color.green;
 
             Port ifFalsePort = GeneratePort(this, "If False", Direction.Output);
+            ifFalsePort.name = "ifFalsePort";
             ifFalsePort.portColor = Color.red;
 
             _contentFoldout = new Foldout {text = "Condition Properties", name = "condition-properties-foldout"};

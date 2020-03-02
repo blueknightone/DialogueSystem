@@ -30,6 +30,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             // Associate stylesheet
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
 
+            GUID = nodeData.guid;
             DialogueText = nodeData.dialogueText;
             SpeakerName = nodeData.speakerName;
 

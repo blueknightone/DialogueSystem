@@ -4,6 +4,7 @@ using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UIElements;
 using static UnityEngine.ScriptableObject;
 
@@ -11,19 +12,20 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
     public class GraphSaveUtility
     {
-        private DialogueGraphView _targetGraphView;
+        private readonly DialogueGraphView _targetGraphView;
         private DialogueContainer _containerCache;
+
+        public GraphSaveUtility(DialogueGraphView targetGraphView)
+        {
+            _targetGraphView = targetGraphView;
+        }
+
         private IEnumerable<DialogueNode> DialogueNodes => _targetGraphView.nodes.ToList()
             .FindAll(node => node.GetType() == typeof(DialogueNode))
             .Cast<DialogueNode>().ToList();
         private List<ConditionNode> ConditionNodes => _targetGraphView.nodes.ToList()
             .FindAll(node => node.GetType() == typeof(ConditionNode))
             .Cast<ConditionNode>().ToList();
-
-        public GraphSaveUtility(DialogueGraphView targetGraphView)
-        {
-            _targetGraphView = targetGraphView;
-        }
 
         public void SaveGraph(string filename)
         {
@@ -58,7 +60,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 if (!dialogueNode.inputContainer.Q<Port>().connected) continue;
 
                 // Add new node data to each port
-                dialogueContainer.DialogueNodes.Add(new DialogueNodeData
+                dialogueContainer.dialogueNodeData.Add(new DialogueNodeData
                 {
                     guid = dialogueNode.GUID,
                     dialogueText = dialogueNode.DialogueText,
@@ -74,7 +76,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                         .connections.First().output.node as DialogueNode;
                     BaseNode inputNode = choicePort.NodePort
                         .connections.First().input.node as BaseNode;
-                    dialogueContainer.NodeLinks.Add(new NodeLinkData
+                    dialogueContainer.nodeLinkData.Add(new NodeLinkData
                     {
                         baseNodeGuid = outputNode?.GUID,
                         choiceText = choicePort.ChoiceText,
@@ -98,14 +100,14 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 BaseNode ifTrueTargetNode = conditionPorts[0].connections.First().input.node as BaseNode;
                 BaseNode ifFalseTargetNode = conditionPorts[1].connections.First().input.node as BaseNode;
 
-                dialogueContainer.ConditionNodes.Add(new ConditionNodeData
+                dialogueContainer.conditionNodeData.Add(new ConditionNodeData
                 {
                     guid = conditionNode.GUID,
                     conditionToTest = conditionNode.ConditionToTest,
                     position = conditionNode.GetPosition().position,
                 });
 
-                dialogueContainer.NodeLinks.Add(new NodeLinkData
+                dialogueContainer.nodeLinkData.Add(new NodeLinkData
                 {
                     baseNodeGuid = conditionNode.GUID,
                     dialogueCondition = conditionNode.ConditionToTest,
@@ -124,6 +126,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             {
                 AssetDatabase.CreateFolder("Assets", "Resources");
             }
+
             AssetDatabase.CreateAsset(dialogueContainer, $"Assets/Resources/{filename}.asset");
             AssetDatabase.SaveAssets();
         }
@@ -148,22 +151,21 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void CreateDialogueNodes()
         {
-            foreach (DialogueNodeData nodeData in _containerCache.DialogueNodes)
+            foreach (DialogueNodeData nodeData in _containerCache.dialogueNodeData)
             {
-                DialogueNode tempNode = _targetGraphView.CreateDialogueNode(_targetGraphView.DefaultNodeSize, nodeData);
+                DialogueNode tempNode = _targetGraphView.CreateDialogueNode(BaseNode.DefaultNodeSize, nodeData);
                 _targetGraphView.AddElement(tempNode);
 
-                List<NodeLinkData> choicePorts = _containerCache.NodeLinks.Where(
+                List<NodeLinkData> choicePorts = _containerCache.nodeLinkData.Where(
                     data => data.baseNodeGuid == nodeData.guid).ToList();
-                
+
                 choicePorts.ForEach(portData => tempNode.AddChoicePorts(portData));
-                
             }
         }
 
         private void CreateConditionNodes()
         {
-            foreach (ConditionNodeData nodeData in _containerCache.ConditionNodes)
+            foreach (ConditionNodeData nodeData in _containerCache.conditionNodeData)
             {
                 ConditionNode tempNode = _targetGraphView.CreateConditionNode(nodeData);
                 _targetGraphView.AddElement(tempNode);
@@ -172,7 +174,106 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void ConnectNodes()
         {
-            // TODO
+            List<BaseNode> allNodes = new List<BaseNode>(DialogueNodes.Count() + ConditionNodes.Count);
+            allNodes.AddRange(DialogueNodes);
+            allNodes.AddRange(ConditionNodes);
+            List<BaseNodeData> allNodeData = new List<BaseNodeData>(_containerCache.dialogueNodeData.Count +
+                                                                    _containerCache.conditionNodeData.Count);
+            allNodeData.AddRange(_containerCache.dialogueNodeData);
+            allNodeData.AddRange(_containerCache.conditionNodeData);
+
+            ConnectStartNode(allNodes, allNodeData);
+
+            foreach (BaseNode baseNode in allNodes)
+            {
+                List<NodeLinkData> connections = _containerCache.nodeLinkData.Where(
+                    data => data.baseNodeGuid == baseNode.GUID).ToList();
+
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    List<string> targetNodeIDs = connections[i].targetNodeGuid;
+                    
+                    // Connect Dialogue Nodes
+                    if (baseNode.GetType() == typeof(DialogueNode))
+                    {
+                        DialogueNode baseDialogueNode = baseNode as DialogueNode;
+                        BaseNode targetNode =
+                            allNodes.First(node => node.GUID == targetNodeIDs[0]);
+                        CreatePortConnection(
+                            baseDialogueNode?.ChoicePorts[i].NodePort,
+                            (Port) targetNode.inputContainer[0]
+                        );
+                        targetNode.SetPosition(new Rect(
+                            allNodeData.First(data => data.guid == targetNodeIDs[0]).position,
+                            BaseNode.DefaultNodeSize
+                        ));
+                    }
+                    
+                    // Connect CondtionNodes
+                    else if (baseNode.GetType() == typeof(ConditionNode))
+                    {
+                        ConditionNode baseConditionNode = baseNode as ConditionNode;
+                        BaseNode ifTrueTargetNode = allNodes.First(node => node.GUID == targetNodeIDs[0]);
+                        CreatePortConnection(
+                            (Port) baseConditionNode?.outputContainer[0],
+                            (Port) ifTrueTargetNode.inputContainer[0]
+                        );
+                        ifTrueTargetNode.SetPosition(new Rect(
+                            new Rect(
+                                allNodeData.First(data => data.guid == ifTrueTargetNode.GUID).position,
+                                BaseNode.DefaultNodeSize
+                            )));
+
+                        BaseNode ifFalseTargetNode = allNodes.First(node => node.GUID == targetNodeIDs[1]);
+                        CreatePortConnection(
+                            (Port) baseConditionNode?.outputContainer[1],
+                            (Port) ifFalseTargetNode.inputContainer[0]
+                        );
+
+                        ifFalseTargetNode.SetPosition(new Rect(
+                            new Rect(
+                                allNodeData.First(data => data.guid == ifFalseTargetNode.GUID).position,
+                                BaseNode.DefaultNodeSize
+                            )));
+                    }
+                }
+            }
+        }
+
+        private void ConnectStartNode(List<BaseNode> allNodes, List<BaseNodeData> allNodeData)
+        {
+            _containerCache.nodeLinkData.ForEach(nodeLink =>
+            {
+                allNodes.ForEach(node =>
+                {
+                    if (!nodeLink.targetNodeGuid.Contains(node.GUID))
+                    {
+                        CreatePortConnection(
+                            (Port) _targetGraphView.nodes.ToList()[0].outputContainer[0],
+                            (Port) node.inputContainer[0]
+                        );
+
+                        node.SetPosition(new Rect(
+                            allNodeData.First(data => data.guid == node.GUID).position,
+                            BaseNode.DefaultNodeSize
+                        ));
+                    }
+                });
+            });
+        }
+
+        private void CreatePortConnection(Port output, Port input)
+        {
+            Edge tempEdge = new Edge
+            {
+                output = output,
+                input = input
+            };
+
+            tempEdge.input.Connect(tempEdge);
+            tempEdge.output.Connect(tempEdge);
+
+            _targetGraphView.Add(tempEdge);
         }
     }
 }

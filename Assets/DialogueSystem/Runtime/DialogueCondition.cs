@@ -7,7 +7,8 @@ namespace lastmilegames.DialogueSystem
     {
         public bool Value { get; private set; }
         public Vector2 Position { get; set; }
-        [SerializeField] private bool initialValue;
+        // ReSharper disable once RedundantDefaultMemberInitializer
+        [SerializeField] private bool initialValue = false;
 
         private void OnEnable()
         {

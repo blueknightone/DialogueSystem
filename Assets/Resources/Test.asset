@@ -12,43 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a08108e497d646b08215f88b69e361f0, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: 
-  NodeLinks:
-  - baseNodeGuid: 86e63c9b-ab2c-412c-ba8e-0e9f4649e61f
+  nodeLinkData:
+  - baseNodeGuid: 38e92919-4778-4f18-8426-4100f45520bd
     choiceText: 
     dialogueCondition: {fileID: 0}
     targetNodeGuid:
-    - d5bd7a49-431d-4f5b-9442-268c8df7c2f1
-  - baseNodeGuid: 86e63c9b-ab2c-412c-ba8e-0e9f4649e61f
-    choiceText: 
-    dialogueCondition: {fileID: 0}
-    targetNodeGuid:
-    - 5eba80c1-323a-4dc4-b64c-e1ebe0652e01
-  - baseNodeGuid: d5bd7a49-431d-4f5b-9442-268c8df7c2f1
-    choiceText: 
-    dialogueCondition: {fileID: 0}
-    targetNodeGuid:
-    - 9a620d38-4c2e-4ba3-9896-cc23bf55e8c8
-    - 91de2f30-64a4-4e52-b839-2eb2c19a9b32
-  DialogueNodes:
-  - guid: 86e63c9b-ab2c-412c-ba8e-0e9f4649e61f
-    dialogueText: Dialogue
-    speakerName: 
-    position: {x: 319, y: 211}
-  - guid: 9a620d38-4c2e-4ba3-9896-cc23bf55e8c8
-    dialogueText: Dialogue
-    speakerName: 
-    position: {x: 944, y: 21}
-  - guid: 91de2f30-64a4-4e52-b839-2eb2c19a9b32
-    dialogueText: Dialogue
-    speakerName: 
-    position: {x: 995, y: 240}
-  - guid: 5eba80c1-323a-4dc4-b64c-e1ebe0652e01
-    dialogueText: Dialogue
-    speakerName: 
-    position: {x: 675, y: 454}
-  ConditionNodes:
-  - guid: d5bd7a49-431d-4f5b-9442-268c8df7c2f1
+    - 293d426e-e37e-47cc-8011-5cd95f1de59e
+    - 25c6133a-11dd-4c10-a022-8e3b9ea7d6c9
+  dialogueNodeData:
+  - guid: 293d426e-e37e-47cc-8011-5cd95f1de59e
+    position: {x: 598, y: 85}
+    dialogueText: True Dialogue
+    speakerName: true
+  - guid: 25c6133a-11dd-4c10-a022-8e3b9ea7d6c9
+    position: {x: 571, y: 328}
+    dialogueText: False Dialogue
+    speakerName: False
+  conditionNodeData:
+  - guid: 38e92919-4778-4f18-8426-4100f45520bd
+    position: {x: 264, y: 190}
     conditionToTest: {fileID: 0}
-    position: {x: 682, y: 36}
-    ifTrueTargetGuid: 
-    ifFalseTargetGuid: 

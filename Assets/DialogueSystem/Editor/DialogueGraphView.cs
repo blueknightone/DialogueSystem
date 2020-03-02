@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using lastmilegames.DialogueSystem.DialogueGraphEditor;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -10,8 +11,6 @@ namespace lastmilegames.DialogueSystem
 {
     public class DialogueGraphView : GraphView
     {
-        public readonly Vector2 DefaultNodeSize = new Vector2(150, 200);
-
         public DialogueGraphView()
         {
             styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
@@ -72,7 +71,7 @@ namespace lastmilegames.DialogueSystem
         public ConditionNode CreateConditionNode(Vector2 windowSize)
         {
             ConditionNode node = new ConditionNode {title = "Condition"};
-            node.SetPosition(new Rect(windowSize / 2f, node.DefaultNodeSize));
+            node.SetPosition(new Rect(windowSize / 2f, BaseNode.DefaultNodeSize));
             return node;
         }
 
@@ -86,7 +85,7 @@ namespace lastmilegames.DialogueSystem
         {
             DialogueNode node = new DialogueNode(OnClickRemoveOutputPort);
             node.UpdateTitle();
-            node.SetPosition(new Rect(windowSize / 2f, node.DefaultNodeSize));
+            node.SetPosition(new Rect(windowSize / 2f, BaseNode.DefaultNodeSize));
 
             return node;
         }
@@ -95,7 +94,7 @@ namespace lastmilegames.DialogueSystem
         {
             DialogueNode node = new DialogueNode(OnClickRemoveOutputPort, nodeData);
             node.UpdateTitle();
-            node.SetPosition(new Rect(windowSize / 2f, node.DefaultNodeSize));
+            node.SetPosition(new Rect(windowSize / 2f, BaseNode.DefaultNodeSize));
 
             return node;
         }
