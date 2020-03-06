@@ -4,62 +4,106 @@ using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UIElements;
 using static UnityEngine.ScriptableObject;
 
 namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
-    public class GraphSaveUtility
+    /// <summary>
+    /// A utility class for saving and loading DialogueGraphs
+    /// </summary>
+    public class DialogueGraphDataUtility
     {
+        /// <summary>
+        /// A reference to the DialogueGraphView to save/load from.
+        /// </summary>
         private readonly DialogueGraphView _targetGraphView;
+
+        /// <summary>
+        /// A cache to temporarily story the loaded data.
+        /// </summary>
         private DialogueContainer _containerCache;
 
-        public GraphSaveUtility(DialogueGraphView targetGraphView)
+        /// <summary>
+        /// Creates a new instance of the utility
+        /// </summary>
+        /// <param name="targetGraphView">The DialogueGraphView to target.</param>
+        public DialogueGraphDataUtility(DialogueGraphView targetGraphView)
         {
             _targetGraphView = targetGraphView;
         }
 
+        /// <summary>
+        /// Stores a list of all DialogueNodes in the target graph.
+        /// </summary>
         private IEnumerable<DialogueNode> DialogueNodes => _targetGraphView.nodes.ToList()
             .FindAll(node => node.GetType() == typeof(DialogueNode))
             .Cast<DialogueNode>().ToList();
+
+        /// <summary>
+        /// Stores a list of all the ConditionNodes in the target graph
+        /// </summary>
         private List<ConditionNode> ConditionNodes => _targetGraphView.nodes.ToList()
             .FindAll(node => node.GetType() == typeof(ConditionNode))
             .Cast<ConditionNode>().ToList();
 
+        /// <summary>
+        /// Saves the graph data to a DialogueContainer asset.
+        /// </summary>
+        /// <param name="filename">The filename of the asset.</param>
         public void SaveGraph(string filename)
         {
             DialogueContainer dialogueContainer = CreateInstance<DialogueContainer>();
+
+            // TODO: Store the link data for the entry node.
+
+            // Add DialogueNode data and their links to the container.
             GetDialogueNodeData(dialogueContainer);
+
+            // Add ConditionNode data and their links to the container.
             GetConditionNodeData(dialogueContainer);
+
+            // Write to the file.
             Save(filename, dialogueContainer);
         }
 
+        /// <summary>
+        /// Loads the graph data from an asset file.
+        /// </summary>
+        /// <param name="filename">The name of the asset file to load.</param>
+        /// TODO: Load data from an asset selected in project view, like ShaderGraph does.
         public void LoadGraph(string filename)
         {
+            // Attempt to cache the data.
             _containerCache = Resources.Load<DialogueContainer>(filename);
 
+            // If the data fails to cache, alert the users.
             if (_containerCache == null)
             {
-                EditorUtility.DisplayDialog("File not found",
-                    "Target dialogue graph file does not exist. Please check the file name and try again.", "OK");
+                EditorUtility.DisplayDialog("Error Loading File.",
+                    "There was a problem loading the file. Please check the file name and try again.",
+                    "OK");
                 return;
             }
 
-            ClearGraph();
-            CreateDialogueNodes();
-            CreateConditionNodes();
-            ConnectNodes();
+            ClearGraph(); // Remove an existing nodes and connections.
+            CreateDialogueNodes(); // Build the DialogueNodes.
+            CreateConditionNodes(); // Build the ConditionNodes.
+            ConnectNodes(); // Connect everything together.
         }
 
+        /// <summary>
+        /// Finds all the DialogueNodes in the graph and adds their data to the container.
+        /// </summary>
+        /// <param name="dialogueContainer">The DialogueContainer to write the nodes to.</param>
         private void GetDialogueNodeData(DialogueContainer dialogueContainer)
         {
             foreach (DialogueNode dialogueNode in DialogueNodes)
             {
-                // Skip if the input port isn't connected to anything.
+                // Don't save the node if the input isn't connected.
                 if (!dialogueNode.inputContainer.Q<Port>().connected) continue;
 
-                // Add new node data to each port
+                // Add the node's data to the container.
                 dialogueContainer.dialogueNodeData.Add(new DialogueNodeData
                 {
                     guid = dialogueNode.GUID,
@@ -70,43 +114,55 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
                 foreach (ChoicePort choicePort in dialogueNode.ChoicePorts)
                 {
-                    if (!choicePort.NodePort.connections.Any()) continue; // Skip if the node port has no connections.
+                    // Skip if the node port has no connections.
+                    if (!choicePort.NodePort.connections.Any()) continue;
 
-                    DialogueNode outputNode = choicePort.NodePort
-                        .connections.First().output.node as DialogueNode;
-                    BaseNode inputNode = choicePort.NodePort
+                    // Get the input and output nodes.
+                    DialogueNode outputNode = choicePort.NodePort.node as DialogueNode;
+                    BaseNode inputNode= choicePort.NodePort
                         .connections.First().input.node as BaseNode;
-                    dialogueContainer.nodeLinkData.Add(new NodeLinkData
-                    {
-                        baseNodeGuid = outputNode?.GUID,
-                        choiceText = choicePort.ChoiceText,
-                        dialogueCondition = choicePort.ConditionToToggle,
-                        targetNodeGuid = new List<string>
+                    
+                    // Add the targets to the container.
+                    dialogueContainer.nodeLinkData.Add(
+                        new NodeLinkData
                         {
-                            inputNode?.GUID
-                        }
-                    });
+                            baseNodeGuid = outputNode?.GUID,
+                            choiceText = choicePort.ChoiceText,
+                            dialogueCondition = choicePort.ConditionToToggle,
+                            targetNodeGuid = new List<string>
+                            {
+                                inputNode?.GUID
+                            }
+                        });
                 }
             }
         }
 
+        /// <summary>
+        /// Finds all the ConditionNodes in the graph and adds their data to the container. 
+        /// </summary>
+        /// <param name="dialogueContainer">The dialogue container to add data to.</param>
         private void GetConditionNodeData(DialogueContainer dialogueContainer)
         {
             foreach (ConditionNode conditionNode in ConditionNodes)
             {
                 // Skip if the input port isn't connected to anything
                 if (!conditionNode.inputContainer.Q<Port>().connected) continue;
+                
+                // Get the connection targets
                 List<Port> conditionPorts = conditionNode.outputContainer.Query<Port>().ToList();
                 BaseNode ifTrueTargetNode = conditionPorts[0].connections.First().input.node as BaseNode;
                 BaseNode ifFalseTargetNode = conditionPorts[1].connections.First().input.node as BaseNode;
 
+                // Add the ConditionNode's data to the container.
                 dialogueContainer.conditionNodeData.Add(new ConditionNodeData
                 {
                     guid = conditionNode.GUID,
                     conditionToTest = conditionNode.ConditionToTest,
-                    position = conditionNode.GetPosition().position,
+                    position = conditionNode.GetPosition().position
                 });
 
+                // Add the connection data to the container
                 dialogueContainer.nodeLinkData.Add(new NodeLinkData
                 {
                     baseNodeGuid = conditionNode.GUID,
@@ -120,17 +176,29 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             }
         }
 
-        private void Save(string filename, DialogueContainer dialogueContainer)
+        /// <summary>
+        /// Save the dialogueContainer as an asset file.
+        /// </summary>
+        /// <param name="filename">The name of the file to save to.</param>
+        /// <param name="dialogueContainer">The dialogue data to save.</param>
+        private static void Save(string filename, DialogueContainer dialogueContainer)
         {
+            // TODO: Refactor so that user creates a new DialogueContainer asset and then saves to it.
+            
+            // Check if save location exists, if not create it.
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
             {
                 AssetDatabase.CreateFolder("Assets", "Resources");
             }
 
+            // Create and save teh asset file.
             AssetDatabase.CreateAsset(dialogueContainer, $"Assets/Resources/{filename}.asset");
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// Removes all nodes and edges from the graph.
+        /// </summary>
         private void ClearGraph()
         {
             List<Node> nodes = _targetGraphView.nodes.ToList();
@@ -149,6 +217,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             }
         }
 
+        /// <summary>
+        /// Creates the DialogueNodes for the cached data.
+        /// </summary>
         private void CreateDialogueNodes()
         {
             foreach (DialogueNodeData nodeData in _containerCache.dialogueNodeData)
@@ -163,6 +234,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             }
         }
 
+        /// <summary>
+        /// Creates the ConditionNodes from the cached data.
+        /// </summary>
         private void CreateConditionNodes()
         {
             foreach (ConditionNodeData nodeData in _containerCache.conditionNodeData)
@@ -172,6 +246,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             }
         }
 
+        /// <summary>
+        /// Creates the connections between nodes with cached data.
+        /// </summary>
         private void ConnectNodes()
         {
             List<BaseNode> allNodes = new List<BaseNode>(DialogueNodes.Count() + ConditionNodes.Count);
@@ -192,7 +269,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 for (int i = 0; i < connections.Count; i++)
                 {
                     List<string> targetNodeIDs = connections[i].targetNodeGuid;
-                    
+
                     // Connect Dialogue Nodes
                     if (baseNode.GetType() == typeof(DialogueNode))
                     {
@@ -208,7 +285,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                             BaseNode.DefaultNodeSize
                         ));
                     }
-                    
+
                     // Connect CondtionNodes
                     else if (baseNode.GetType() == typeof(ConditionNode))
                     {
@@ -240,28 +317,42 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             }
         }
 
-        private void ConnectStartNode(List<BaseNode> allNodes, List<BaseNodeData> allNodeData)
+        /// <summary>
+        /// Connects the start node to the first node
+        /// </summary>
+        /// <param name="allNodes">All of the node data.</param>
+        /// <param name="allNodeData">All the link data.</param>
+        private void ConnectStartNode(List<BaseNode> allNodes, IEnumerable<BaseNodeData> allNodeData)
         {
+            // TODO: There is a bug here causing all the nodes to be connected to the entry node.
+            // Go through each node in the cache and see if it is targeted by another node.
             _containerCache.nodeLinkData.ForEach(nodeLink =>
             {
                 allNodes.ForEach(node =>
                 {
-                    if (!nodeLink.targetNodeGuid.Contains(node.GUID))
-                    {
-                        CreatePortConnection(
-                            (Port) _targetGraphView.nodes.ToList()[0].outputContainer[0],
-                            (Port) node.inputContainer[0]
-                        );
+                    // If the node is targeted by another, move on.
+                    if (nodeLink.targetNodeGuid.Contains(node.GUID)) return;
+                    
+                    // Otherwise, create the connection...
+                    CreatePortConnection(
+                        (Port) _targetGraphView.nodes.ToList()[0].outputContainer[0],
+                        (Port) node.inputContainer[0]
+                    );
 
-                        node.SetPosition(new Rect(
-                            allNodeData.First(data => data.guid == node.GUID).position,
-                            BaseNode.DefaultNodeSize
-                        ));
-                    }
+                    //...and set its position.
+                    node.SetPosition(new Rect(
+                        allNodeData.First(data => data.guid == node.GUID).position,
+                        BaseNode.DefaultNodeSize
+                    ));
                 });
             });
         }
 
+        /// <summary>
+        /// Create a connection between two ports.
+        /// </summary>
+        /// <param name="output">The output port to connect</param>
+        /// <param name="input">The input port to connect</param>
         private void CreatePortConnection(Port output, Port input)
         {
             Edge tempEdge = new Edge

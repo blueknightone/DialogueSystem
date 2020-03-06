@@ -43,6 +43,7 @@ namespace lastmilegames.DialogueSystem
 
         public void CreateNode(string nodeName, NodeType nodeType, Vector2 windowSize)
         {
+            // TODO: Create node at middle of GraphView (GraphView.viewTransform.position?)
             switch (nodeType)
             {
                 case NodeType.Condition:
