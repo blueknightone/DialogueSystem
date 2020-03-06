@@ -224,7 +224,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             foreach (DialogueNodeData nodeData in _containerCache.dialogueNodeData)
             {
-                DialogueNode tempNode = _targetGraphView.CreateDialogueNode(BaseNode.DefaultNodeSize, nodeData);
+                DialogueNode tempNode = _targetGraphView.CreateDialogueNode(nodeData);
                 _targetGraphView.AddElement(tempNode);
 
                 List<NodeLinkData> choicePorts = _containerCache.nodeLinkData.Where(
@@ -241,7 +241,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             foreach (ConditionNodeData nodeData in _containerCache.conditionNodeData)
             {
-                ConditionNode tempNode = _targetGraphView.CreateConditionNode(nodeData);
+                ConditionNode tempNode = DialogueGraphView.CreateConditionNode(nodeData);
                 _targetGraphView.AddElement(tempNode);
             }
         }

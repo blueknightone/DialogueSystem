@@ -41,6 +41,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
             // Add node fields
             BuildNodeControls();
+            UpdateTitle();
         }
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
             // Add node fields
             BuildNodeControls();
+            UpdateTitle();
         }
 
         /// <summary>

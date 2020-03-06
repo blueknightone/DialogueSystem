@@ -93,13 +93,13 @@ namespace lastmilegames.DialogueSystem
             // Button to create new DialogueNodes.
             toolbar.Add(new ToolbarButton(() =>
             {
-                _graphView.CreateNode("Dialogue", NodeType.Dialogue, position.size);
+                _graphView.CreateNode(NodeType.Dialogue, position.size);
             }) {text = "Add Dialogue"});
             
             // Button to create new ConditionNodes
             toolbar.Add(new ToolbarButton(() =>
             {
-                _graphView.CreateNode("Condition", NodeType.Condition, position.size);
+                _graphView.CreateNode(NodeType.Condition, position.size);
             }) {text = "Add Condition"});
 
             // Flexible spacer.
