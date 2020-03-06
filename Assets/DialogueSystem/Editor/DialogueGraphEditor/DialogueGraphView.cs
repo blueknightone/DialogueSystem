@@ -7,7 +7,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace lastmilegames.DialogueSystem
+namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
     /// <summary>
     /// Represents the main GraphView for Dialogues

@@ -1,11 +1,10 @@
-﻿using lastmilegames.DialogueSystem.DialogueGraphEditor;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace lastmilegames.DialogueSystem
+namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
     /// <summary>
     /// Represents the parent EditorWindow for the dialogue visual editor.
