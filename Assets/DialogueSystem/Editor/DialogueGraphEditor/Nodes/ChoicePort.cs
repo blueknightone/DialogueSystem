@@ -48,7 +48,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         {
             NodePort = nodePort;
             ChoiceText = portData.choiceText;
-            ConditionToToggle = portData.dialogueCondition;
+            ConditionToToggle = portData.dialogueConditionToToggle;
 
             nodePort.contentContainer.Add(GenerateDeleteButton(onClickRemovePort));
             nodePort.contentContainer.Add(GenerateFoldout());

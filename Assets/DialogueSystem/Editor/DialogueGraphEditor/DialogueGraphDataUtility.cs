@@ -128,7 +128,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                         {
                             baseNodeGuid = outputNode?.GUID,
                             choiceText = choicePort.ChoiceText,
-                            dialogueCondition = choicePort.ConditionToToggle,
+                            dialogueConditionToToggle = choicePort.ConditionToToggle,
                             targetNodeGuid = new List<string>
                             {
                                 inputNode?.GUID
@@ -166,7 +166,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 dialogueContainer.nodeLinkData.Add(new NodeLinkData
                 {
                     baseNodeGuid = conditionNode.GUID,
-                    dialogueCondition = conditionNode.ConditionToTest,
+                    dialogueConditionToToggle = conditionNode.ConditionToTest,
                     targetNodeGuid = new List<string>
                     {
                         ifTrueTargetNode?.GUID,
