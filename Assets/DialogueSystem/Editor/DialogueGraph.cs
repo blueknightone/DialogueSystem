@@ -1,5 +1,4 @@
 ﻿using lastmilegames.DialogueSystem.DialogueGraphEditor;
-using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -8,15 +7,39 @@ using UnityEngine.UIElements;
 
 namespace lastmilegames.DialogueSystem
 {
+    /// <summary>
+    /// Represents the parent EditorWindow for the dialogue visual editor.
+    /// </summary>
     public class DialogueGraph : EditorWindow
     {
-        private Toolbar _toolbar;
-        private DialogueGraphView _graphView;
-        private MiniMap _miniMap;
+        /// <summary>
+        /// The data utility for saving/loading graphs.
+        /// </summary>
         private DialogueGraphDataUtility _dialogueGraphDataUtility;
-        private bool _miniMapEnabled;
-        private string _fileName = "";
 
+        /// <summary>
+        /// The filename to save/load the graph to.
+        /// </summary>
+        private string _fileName = "";
+        
+        /// <summary>
+        /// The GraphView instance.
+        /// </summary>
+        private DialogueGraphView _graphView;
+
+        /// <summary>
+        /// The GraphView.MiniMap instance.
+        /// </summary>
+        private MiniMap _miniMap;
+
+        /// <summary>
+        /// Mini map visibility.
+        /// </summary>
+        private bool _miniMapEnabled;
+
+        /// <summary>
+        /// Opens the DialogueGraph editor window.
+        /// </summary>
         [MenuItem("Dialogue System/Open Visual Editor")]
         private static void ShowWindow()
         {
@@ -27,61 +50,82 @@ namespace lastmilegames.DialogueSystem
 
         private void OnEnable()
         {
-            rootVisualElement.style.flexDirection = FlexDirection.Column;
-
-            GenerateToolbar();
-            GenerateGraphView();
-            GenerateMiniMap();
-            
-            _dialogueGraphDataUtility = new DialogueGraphDataUtility(_graphView);
+            InitializeGraphView();
         }
 
         private void OnGUI()
         {
-            if (_miniMap != null)
-            {
-                _miniMap.visible = _miniMapEnabled;
-            }
+            // Enable mini map if visible.
+            if (_miniMap != null) _miniMap.visible = _miniMapEnabled;
         }
 
-        private void OnDisable()
+        /// <summary>
+        /// Prepares the window elements.
+        /// </summary>
+        private void InitializeGraphView()
         {
-            rootVisualElement.Remove(_toolbar);
+            // Set the root elements flex direction
+            rootVisualElement.style.flexDirection = FlexDirection.Column;
+            
+            // Create the window elements
+            rootVisualElement.Add(GenerateToolbar());
+            
+            _graphView = GenerateGraphView();
+            rootVisualElement.Add(_graphView);
+            
+            _miniMap = GenerateMiniMap();
+            _graphView.Add(_miniMap);
+
+            // Get the data utility so we can save and load.
+            _dialogueGraphDataUtility = new DialogueGraphDataUtility(_graphView);
         }
 
-        private void GenerateToolbar()
+        /// <summary>
+        /// Creates and populates a UIElements.Toolbar
+        /// </summary>
+        /// <returns>Returns the UIElements.Toolbar with controls.</returns>
+        private Toolbar GenerateToolbar()
         {
-            // TODO: Load asset from item selected in inspector
-            _toolbar = new Toolbar();
-            _toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
+            // Create the toolbar and load the stylesheet.
+            Toolbar toolbar = new Toolbar();
+            toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
 
-            _toolbar.Add(new ToolbarButton(() =>
+            // Button to create new DialogueNodes.
+            toolbar.Add(new ToolbarButton(() =>
             {
                 _graphView.CreateNode("Dialogue", NodeType.Dialogue, position.size);
             }) {text = "Add Dialogue"});
             
-            _toolbar.Add(new ToolbarButton(() =>
+            // Button to create new ConditionNodes
+            toolbar.Add(new ToolbarButton(() =>
             {
                 _graphView.CreateNode("Condition", NodeType.Condition, position.size);
             }) {text = "Add Condition"});
 
-            _toolbar.Add(new ToolbarSpacer() {flex = true});
+            // Flexible spacer.
+            toolbar.Add(new ToolbarSpacer() {flex = true});
 
+            // TODO: Save/Load asset from item selected in inspector. See OnOpenAsset
+            // TextField to set the file to save/load from.
             TextField fileNameTextField = new TextField("FileName");
             fileNameTextField.style.minWidth = 150;
             fileNameTextField.labelElement.style.minWidth = 0;
             fileNameTextField.SetValueWithoutNotify(_fileName);
             fileNameTextField.MarkDirtyRepaint();
             fileNameTextField.RegisterValueChangedCallback(evt => _fileName = evt.newValue);
-            _toolbar.Add(fileNameTextField);
-            _toolbar.Add(new ToolbarButton(() =>
+            toolbar.Add(fileNameTextField);
+            
+            // Button to save the asset
+            toolbar.Add(new ToolbarButton(() =>
             {
                 _dialogueGraphDataUtility.SaveGraph(fileNameTextField.value);
             })
             {
                 text = "Save Asset"
             });
-            _toolbar.Add(new ToolbarButton(() =>
+            
+            // Button to load the asset
+            toolbar.Add(new ToolbarButton(() =>
             {
                 _dialogueGraphDataUtility.LoadGraph(fileNameTextField.value);
             })
@@ -89,28 +133,38 @@ namespace lastmilegames.DialogueSystem
                 text = "Load Asset"
             });
 
+            // Button to toggle the mini map visibility.
             ToolbarToggle toggleMiniMap = new ToolbarToggle {text = "Toggle MiniMap"};
             toggleMiniMap.RegisterValueChangedCallback(evt => { _miniMapEnabled = evt.newValue; });
-            _toolbar.Add(toggleMiniMap);
+            toolbar.Add(toggleMiniMap);
 
-            rootVisualElement.Add(_toolbar);
+            return toolbar;
         }
 
-        private void GenerateGraphView()
+        /// <summary>
+        /// Creates the default instance of DialogueGraphView.
+        /// </summary>
+        /// <returns>Returns a default DialogueGraphView.</returns>
+        private static DialogueGraphView GenerateGraphView()
         {
-            _graphView = new DialogueGraphView
+            DialogueGraphView graphView = new DialogueGraphView
             {
                 name = "Dialogue Graph"
             };
-            _graphView.style.flexGrow = 1;
-            rootVisualElement.Add(_graphView);
+            graphView.style.flexGrow = 1;
+
+            return graphView;
         }
 
-        private void GenerateMiniMap()
+        /// <summary>
+        /// Creates a default mini map.
+        /// </summary>
+        /// <returns>Returns a default mini map to add to the DialogueGraphView.</returns>
+        private MiniMap GenerateMiniMap()
         {
-            _miniMap = new MiniMap {visible = _miniMapEnabled};
-            _miniMap.SetPosition(new Rect(10, 30, 200, 140));
-            _graphView.Add(_miniMap);
+            MiniMap miniMap = new MiniMap {visible = _miniMapEnabled};
+            miniMap.SetPosition(new Rect(10, 30, 200, 140));
+            return miniMap;
         }
     }
 }

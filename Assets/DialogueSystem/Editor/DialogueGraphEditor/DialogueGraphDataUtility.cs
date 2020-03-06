@@ -318,7 +318,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         }
 
         /// <summary>
-        /// Connects the start node to the first node
+        /// Connects the start node to the first nodein the data.
         /// </summary>
         /// <param name="allNodes">All of the node data.</param>
         /// <param name="allNodeData">All the link data.</param>
