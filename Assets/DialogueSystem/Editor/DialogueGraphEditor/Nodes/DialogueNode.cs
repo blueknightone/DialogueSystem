@@ -59,6 +59,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             DialogueText = nodeData.dialogueText;
             SpeakerName = nodeData.speakerName;
 
+            for (int i = 0; i < nodeData.responses.Count; i++)
+            {
+                AddDialogueNodePorts(nodeData.responses[i], nodeData.conditionsToToggle[i]);
+            }
+
             // Add node fields
             BuildNodeControls();
             UpdateTitle();
@@ -70,7 +75,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         private void BuildNodeControls()
         {
             // An UIElements.Button that adds new DialogueNodePorts to the output container.
-            Button addChoiceButton = new Button(AddDialogueNodePorts) {text = "Add Choice"};
+            Button addChoiceButton = new Button(() => AddDialogueNodePorts()) {text = "Add Choice"};
             titleButtonContainer.Add(addChoiceButton);
 
             // The UIElements.Foldout that contains the main controls.
@@ -114,11 +119,13 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         }
 
         // Adds an empty DialogueNodePort to the node's output container. 
-        private void AddDialogueNodePorts()
+        private void AddDialogueNodePorts(string responseText = "", DialogueCondition condition = null)
         {
             DialogueNodePort dialogueNodePort = new DialogueNodePort(
                 GeneratePort(this, "Out", Direction.Output, type: typeof(string)),
-                onClickRemovePort);
+                onClickRemovePort,
+                responseText,
+                condition);
 
             DialogueNodePorts.Add(dialogueNodePort);
             outputContainer.Add(dialogueNodePort.Port);

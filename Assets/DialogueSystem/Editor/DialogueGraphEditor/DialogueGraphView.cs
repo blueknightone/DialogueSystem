@@ -121,7 +121,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// </summary>
         /// <param name="nodeData">The values to initialize the node with.</param>
         /// <returns>A condition node with the initialized values.</returns>
-        public static ConditionNode CreateConditionNode(ConditionNodeData nodeData)
+        public ConditionNode CreateConditionNode(ConditionNodeData nodeData)
         {
             return new ConditionNode(nodeData);
         }

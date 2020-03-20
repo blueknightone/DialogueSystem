@@ -19,8 +19,14 @@ namespace lastmilegames.DialogueSystem
         /// </summary>
         public string speakerName;
 
+        /// <summary>
+        /// A list of the DialogueNodePort responses.
+        /// </summary>
         public List<string> responses;
 
+        /// <summary>
+        /// A list of the DialogueNodePort conditions to toggle.
+        /// </summary>
         public List<DialogueCondition> conditionsToToggle;
     }
 }

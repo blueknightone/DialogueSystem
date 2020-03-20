@@ -19,9 +19,11 @@ MonoBehaviour:
   - baseNodeGuid: 58ba357c-2bd0-4fc8-b45e-9d6fb4cff9b3
     targetNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
   - baseNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
-    targetNodeGuid: 55bb8236-0ba7-4d9f-8af9-30525bab2b22
-  - baseNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
     targetNodeGuid: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
+  - baseNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
+    targetNodeGuid: 55bb8236-0ba7-4d9f-8af9-30525bab2b22
+  - baseNodeGuid: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
+    targetNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
   - baseNodeGuid: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
     targetNodeGuid: 1a2f6c4e-6cb4-4fec-ad9f-57ffedb2fb81
   - baseNodeGuid: 55bb8236-0ba7-4d9f-8af9-30525bab2b22
@@ -35,20 +37,22 @@ MonoBehaviour:
     - Goodbye 2
     conditionsToToggle:
     - {fileID: 0}
-  - baseNodeGUID: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
-    position: {x: 559, y: 50}
-    dialogueText: This is True
-    speakerName: Speaker 1
-    responses:
-    - Goodbye 1
-    conditionsToToggle:
-    - {fileID: 11400000, guid: 679e7dd7832f51845a47085ba33434bf, type: 2}
   - baseNodeGUID: 1a2f6c4e-6cb4-4fec-ad9f-57ffedb2fb81
     position: {x: 977, y: 183}
     dialogueText: Goodbye.
     speakerName: Speaker 3
     responses: []
     conditionsToToggle: []
+  - baseNodeGUID: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
+    position: {x: 577, y: 23}
+    dialogueText: This is True
+    speakerName: Speaker 1
+    responses:
+    - Response with Condition
+    - Response Without Condition
+    conditionsToToggle:
+    - {fileID: 11400000, guid: 679e7dd7832f51845a47085ba33434bf, type: 2}
+    - {fileID: 0}
   conditionNodeData:
   - baseNodeGUID: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
     position: {x: 255, y: 167}

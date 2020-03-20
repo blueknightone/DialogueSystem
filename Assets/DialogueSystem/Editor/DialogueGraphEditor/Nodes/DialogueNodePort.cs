@@ -18,12 +18,12 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <summary>
         /// The ResponseText to display on the response buttons.
         /// </summary>
-        public string ResponseText { get; private set; }
+        public string ResponseText { get; set; }
         
         /// <summary>
         /// The dialogue condition to toggle the value of when the choice is selected.
         /// </summary>
-        public DialogueCondition ConditionToToggle { get; private set; }
+        public DialogueCondition ConditionToToggle { get; set; }
 
         /// <summary>
         /// Generates a default dialogue node port.
@@ -34,6 +34,17 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         {
             Port = port;
             
+            port.contentContainer.Add(GenerateDeleteButton(onClickRemovePort));
+            port.contentContainer.Add(GenerateFoldout());
+        }
+
+        public DialogueNodePort(Port port, Action<Node,Port> onClickRemovePort, string responseText = "", 
+            DialogueCondition condition = null)
+        {
+            Port = port;
+            ResponseText = responseText;
+            ConditionToToggle = condition;
+                        
             port.contentContainer.Add(GenerateDeleteButton(onClickRemovePort));
             port.contentContainer.Add(GenerateFoldout());
         }
@@ -81,6 +92,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             {
                 name  = "ConditionToToggle",
                 objectType = typeof(DialogueCondition),
+                value = ConditionToToggle,
                 allowSceneObjects = false
             };
             dialogueToToggle.RegisterValueChangedCallback(evt =>
