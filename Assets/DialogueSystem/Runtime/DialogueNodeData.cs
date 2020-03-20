@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace lastmilegames.DialogueSystem
 {
@@ -17,5 +18,9 @@ namespace lastmilegames.DialogueSystem
         /// The speaker.
         /// </summary>
         public string speakerName;
+
+        public List<string> responses;
+
+        public List<DialogueCondition> conditionsToToggle;
     }
 }

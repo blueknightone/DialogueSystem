@@ -26,9 +26,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         public string SpeakerName { get; private set; }
         
         /// <summary>
-        /// The ChoicePorts that represent possible responses.
+        /// The DialogueNodePorts that represent possible responses.
         /// </summary>
-        public List<ChoicePort> ChoicePorts { get; } = new List<ChoicePort>();
+        public List<DialogueNodePort> DialogueNodePorts { get; } = new List<DialogueNodePort>();
 
         /// <summary>
         /// Generates a new, default DialogueNode.
@@ -55,7 +55,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
 
             // Set the properties from the passed in data.
-            GUID = nodeData.guid;
+            GUID = nodeData.baseNodeGUID;
             DialogueText = nodeData.dialogueText;
             SpeakerName = nodeData.speakerName;
 
@@ -69,8 +69,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// </summary>
         private void BuildNodeControls()
         {
-            // An UIElements.Button that adds new ChoicePorts to the output container.
-            Button addChoiceButton = new Button(AddChoicePort) {text = "Add Choice"};
+            // An UIElements.Button that adds new DialogueNodePorts to the output container.
+            Button addChoiceButton = new Button(AddDialogueNodePorts) {text = "Add Choice"};
             titleButtonContainer.Add(addChoiceButton);
 
             // The UIElements.Foldout that contains the main controls.
@@ -113,30 +113,15 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             SetPosition(new Rect(Vector2.zero, DefaultNodeSize));
         }
 
-        // Adds an empty ChoicePort to the node's output container. 
-        private void AddChoicePort()
+        // Adds an empty DialogueNodePort to the node's output container. 
+        private void AddDialogueNodePorts()
         {
-            ChoicePort choicePort = new ChoicePort(
+            DialogueNodePort dialogueNodePort = new DialogueNodePort(
                 GeneratePort(this, "Out", Direction.Output, type: typeof(string)),
-                OnClickRemovePort);
+                onClickRemovePort);
 
-            ChoicePorts.Add(choicePort);
-            outputContainer.Add(choicePort.NodePort);
-            RefreshExpandedState();
-            RefreshPorts();
-        }
-
-        // Adds a pre-populated ChoicePort to the node's output container.
-        public void AddChoicePorts(NodeLinkData portData)
-        {
-            ChoicePort choicePort = new ChoicePort(
-                GeneratePort(this, "Out", Direction.Output, type: typeof(string)),
-                OnClickRemovePort,
-                portData);
-
-            ChoicePorts.Add(choicePort);
-            outputContainer.Add(choicePort.NodePort);
-            
+            DialogueNodePorts.Add(dialogueNodePort);
+            outputContainer.Add(dialogueNodePort.Port);
             RefreshExpandedState();
             RefreshPorts();
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace lastmilegames.DialogueSystem
 {
@@ -15,18 +14,8 @@ namespace lastmilegames.DialogueSystem
         public string baseNodeGuid;
         
         /// <summary>
-        /// The response text associated with the link.
-        /// </summary>
-        public string choiceText;
-        
-        /// <summary>
-        /// The DialogueCondition to have it's value toggled.
-        /// </summary>
-        public DialogueCondition dialogueConditionToToggle;
-        
-        /// <summary>
         /// The next node to move to.
         /// </summary>
-        public List<string> targetNodeGuid;
+        public string targetNodeGuid;
     }
 }

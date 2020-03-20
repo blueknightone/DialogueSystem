@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using lastmilegames.DialogueSystem.DialogueGraphEditor;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -89,16 +88,19 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private static EntryNode GenerateEntryPointNode()
         {
             EntryNode node = new EntryNode {title = "Start"};
+            
+            // Remove the entry port
+            node.inputContainer.RemoveAt(0);
 
             // Create the output port.
             node.GeneratePort(node, "Next", Direction.Output);
-            
+
             // Prevent the deletion of the node.
             node.capabilities &= ~Capabilities.Deletable;
-            
+
             // Set the default position of the node.
             node.SetPosition(new Rect(100, 200, 100, 150));
-            
+
             return node;
         }
 
@@ -146,12 +148,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             return new DialogueNode(OnClickRemoveOutputPort, nodeData);
         }
 
-        /// <summary>
-        /// Removes a port from a node and all of its connections.
-        /// </summary>
-        /// <param name="node">The port's parent node.</param>
-        /// <param name="port">The port to remove.</param>
-        private void OnClickRemoveOutputPort(Node node, Port port)
+        
+        public void OnClickRemoveOutputPort(Node node, Port port)
         {
             // Find all the edges (connections) this port makes to others.
             IEnumerable<Edge> targetEdges = edges.ToList()
@@ -166,11 +164,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 RemoveElement(targetEdges.First());
             }
 
-            // If the node is a dialogueNode, we need to remove the ChoicePort element.
+            // If the node is a dialogueNode, we need to remove the DialogueNodePort element.
             if (node is DialogueNode dialogueNode)
             {
-                List<ChoicePort> choicePorts = dialogueNode.ChoicePorts;
-                choicePorts.Remove(choicePorts.Find(x => x.NodePort == port));
+                List<DialogueNodePort> choicePorts = dialogueNode.DialogueNodePorts;
+                choicePorts.Remove(choicePorts.Find(x => x.Port == port));
             }
 
             // Finally, remove the port and refresh the UI.

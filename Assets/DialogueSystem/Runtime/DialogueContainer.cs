@@ -10,6 +10,11 @@ namespace lastmilegames.DialogueSystem
     public class DialogueContainer : ScriptableObject
     {
         /// <summary>
+        /// The entry node for the conversation.
+        /// </summary>
+        public BaseNodeData entryNode = new BaseNodeData();
+        
+        /// <summary>
         /// A list of the links between nodes.
         /// </summary>
         public List<NodeLinkData> nodeLinkData = new List<NodeLinkData>();

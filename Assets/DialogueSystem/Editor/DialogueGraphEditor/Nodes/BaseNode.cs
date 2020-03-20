@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -24,7 +26,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <summary>
         /// The action delegate to call when the remove port button is clicked.
         /// </summary>
-        protected readonly Action<Node, Port> OnClickRemovePort;
+        protected readonly Action<Node, Port> onClickRemovePort;
 
         /// <summary>
         /// Creates a default node with an input port.
@@ -35,7 +37,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 
             GeneratePort(this, "Input", Direction.Input, Port.Capacity.Multi);
             inputContainer.Q<Port>().portColor = Color.cyan;
-            OnClickRemovePort = (node, port) =>
+            onClickRemovePort = (node, port) =>
             {
                 Debug.LogWarningFormat(
                     "No remove port action set on node {0} port {1}",
@@ -52,7 +54,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         protected BaseNode(Action<Node, Port> onClickRemovePort)
         {
             GUID = Guid.NewGuid().ToString();
-            OnClickRemovePort = onClickRemovePort;
+            this.onClickRemovePort = onClickRemovePort;
 
             // Create input port
             GeneratePort(this, "Input", Direction.Input, Port.Capacity.Multi);
@@ -88,6 +90,42 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             }
 
             return port;
+        }
+    }
+
+    public static class BaseNodeExtension
+    {
+        /// <summary>
+        /// Removes a port from a node and all of its connections.
+        /// </summary>
+        /// <param name="node">The port's parent node.</param>
+        /// <param name="port">The port to remove.</param>
+        public static void OnClickRemovePort(this BaseNode node, Port port, DialogueGraphView targetGraph)
+        {
+            // Find all the edges (connections) this port makes to others.
+            IEnumerable<Edge> targetEdges = targetGraph.edges.ToList()
+                .Where(x => x.output == port && x.output.node == port.node)
+                .ToList();
+
+            // If any edges were found, remove them.
+            if (targetEdges.Any())
+            {
+                Edge edge = targetEdges.First();
+                edge.input.Disconnect(edge);
+                targetGraph.RemoveElement(targetEdges.First());
+            }
+
+            // If the node is a dialogueNode, we need to remove the DialogueNodePort element.
+            if (node is DialogueNode dialogueNode)
+            {
+                List<DialogueNodePort> choicePorts = dialogueNode.DialogueNodePorts;
+                choicePorts.Remove(choicePorts.Find(x => x.Port == port));
+            }
+
+            // Finally, remove the port and refresh the UI.
+            node.outputContainer.Remove(port);
+            node.RefreshExpandedState();
+            node.RefreshPorts();
         }
     }
 }

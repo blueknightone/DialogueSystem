@@ -7,9 +7,9 @@ namespace lastmilegames.DialogueSystem
     /// Base class for serializable node data. Represents the data all nodes should track.
     /// </summary>
     [Serializable]
-    public abstract class BaseNodeData
+    public class BaseNodeData
     {
-        public string guid;
+        public string baseNodeGUID;
         public Vector2 position;
     }
 }
