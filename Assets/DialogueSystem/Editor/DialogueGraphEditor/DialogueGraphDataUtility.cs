@@ -210,13 +210,44 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             List<BaseNode> nodes = _targetGraphView.nodes.ToList().Cast<BaseNode>().ToList();
             foreach (BaseNode node in nodes)
             {
-                List<NodeLinkData> connections =
-                    container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
-                for (int i = 0; i < connections.Count; i++)
+                if (node is EntryNode entryNode)
                 {
-                    string targetNodeGuid = connections[i].targetNodeGuid;
-                    BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
-                    LinkNodes(node.outputContainer[i].Q<Port>(), (Port) targetNode.inputContainer[0]);
+                    // Connect entry node to targets
+                    string targetNodeGuid = container.nodeLinkData.First(data =>
+                        data.baseNodeGuid == entryNode.GUID).targetNodeGuid;
+                    BaseNode targetNode = nodes.First(x => x.GUID == targetNodeGuid);
+                    LinkNodes(
+                        (Port) entryNode.outputContainer[0],
+                        (Port) targetNode.inputContainer[0]
+                    );
+                }
+                // Connect dialogue nodes to targets
+                else if (node is DialogueNode dialogueNode)
+                {
+                    List<NodeLinkData> dialogueNodeConnections =
+                        container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
+                    for (int i = 0; i < dialogueNodeConnections.Count; i++)
+                    {
+                        string targetNodeGuid = dialogueNodeConnections[i].targetNodeGuid;
+                        BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                        LinkNodes(
+                            dialogueNode.DialogueNodePorts[i].Port,
+                            (Port) targetNode.inputContainer[0]
+                        );
+                    }
+                }
+                // Connect the rest of the nodes to their targets
+                // Works for anything that doesn't add a special way of handling ports.
+                else
+                {
+                    List<NodeLinkData> connections =
+                        container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
+                    for (int i = 0; i < connections.Count; i++)
+                    {
+                        string targetNodeGuid = connections[i].targetNodeGuid;
+                        BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                        LinkNodes(node.outputContainer[i].Q<Port>(), (Port) targetNode.inputContainer[0]);
+                    }
                 }
             }
         }

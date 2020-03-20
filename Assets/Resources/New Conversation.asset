@@ -13,47 +13,63 @@ MonoBehaviour:
   m_Name: New Conversation
   m_EditorClassIdentifier: 
   entryNode:
-    baseNodeGUID: 58ba357c-2bd0-4fc8-b45e-9d6fb4cff9b3
+    baseNodeGUID: 108832e3-d68c-4a2a-8954-0371d881a7b3
     position: {x: 100, y: 200}
   nodeLinkData:
-  - baseNodeGuid: 58ba357c-2bd0-4fc8-b45e-9d6fb4cff9b3
-    targetNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
-  - baseNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
-    targetNodeGuid: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
-  - baseNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
-    targetNodeGuid: 55bb8236-0ba7-4d9f-8af9-30525bab2b22
-  - baseNodeGuid: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
-    targetNodeGuid: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
-  - baseNodeGuid: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
-    targetNodeGuid: 1a2f6c4e-6cb4-4fec-ad9f-57ffedb2fb81
-  - baseNodeGuid: 55bb8236-0ba7-4d9f-8af9-30525bab2b22
-    targetNodeGuid: 1a2f6c4e-6cb4-4fec-ad9f-57ffedb2fb81
+  - baseNodeGuid: 108832e3-d68c-4a2a-8954-0371d881a7b3
+    targetNodeGuid: 8cb69068-e533-4732-a7c6-7bff85e14d88
+  - baseNodeGuid: 944d3e50-354e-4c4a-b849-bd4516741d0e
+    targetNodeGuid: fd580510-6a2d-4180-b94f-c5d628e29793
+  - baseNodeGuid: 944d3e50-354e-4c4a-b849-bd4516741d0e
+    targetNodeGuid: e8101ab3-3d4d-48c5-a10b-a5e03857ead3
+  - baseNodeGuid: d4c106c5-411f-4f2c-8a73-7aa197a82572
+    targetNodeGuid: fd580510-6a2d-4180-b94f-c5d628e29793
+  - baseNodeGuid: d4c106c5-411f-4f2c-8a73-7aa197a82572
+    targetNodeGuid: 42720a2b-35a8-4298-b037-cfd35e1bd178
+  - baseNodeGuid: 8cb69068-e533-4732-a7c6-7bff85e14d88
+    targetNodeGuid: d4c106c5-411f-4f2c-8a73-7aa197a82572
+  - baseNodeGuid: 8cb69068-e533-4732-a7c6-7bff85e14d88
+    targetNodeGuid: 944d3e50-354e-4c4a-b849-bd4516741d0e
   dialogueNodeData:
-  - baseNodeGUID: 55bb8236-0ba7-4d9f-8af9-30525bab2b22
-    position: {x: 558, y: 336}
-    dialogueText: This is False
-    speakerName: Speaker 2
+  - baseNodeGUID: 944d3e50-354e-4c4a-b849-bd4516741d0e
+    position: {x: 544, y: 336}
+    dialogueText: Nice to meet you.
+    speakerName: NPC
     responses:
-    - Goodbye 2
-    conditionsToToggle:
-    - {fileID: 0}
-  - baseNodeGUID: 1a2f6c4e-6cb4-4fec-ad9f-57ffedb2fb81
-    position: {x: 977, y: 183}
-    dialogueText: Goodbye.
-    speakerName: Speaker 3
-    responses: []
-    conditionsToToggle: []
-  - baseNodeGUID: e28cfc0f-01c0-4c02-9fa9-1e4fd8e65986
-    position: {x: 577, y: 23}
-    dialogueText: This is True
-    speakerName: Speaker 1
-    responses:
-    - Response with Condition
-    - Response Without Condition
+    - What's your name?
+    - Goodbye.
     conditionsToToggle:
     - {fileID: 11400000, guid: 679e7dd7832f51845a47085ba33434bf, type: 2}
     - {fileID: 0}
+  - baseNodeGUID: d4c106c5-411f-4f2c-8a73-7aa197a82572
+    position: {x: 524, y: 18}
+    dialogueText: So we meet again.
+    speakerName: Albert
+    responses:
+    - What's your name again?
+    - How are you
+    conditionsToToggle:
+    - {fileID: 0}
+    - {fileID: 0}
+  - baseNodeGUID: fd580510-6a2d-4180-b94f-c5d628e29793
+    position: {x: 992, y: 176}
+    dialogueText: It's Albert
+    speakerName: Albert
+    responses: []
+    conditionsToToggle: []
+  - baseNodeGUID: 42720a2b-35a8-4298-b037-cfd35e1bd178
+    position: {x: 944, y: -74}
+    dialogueText: Been better...
+    speakerName: Albert
+    responses: []
+    conditionsToToggle: []
+  - baseNodeGUID: e8101ab3-3d4d-48c5-a10b-a5e03857ead3
+    position: {x: 962, y: 421}
+    dialogueText: Bye.
+    speakerName: NPC
+    responses: []
+    conditionsToToggle: []
   conditionNodeData:
-  - baseNodeGUID: 4c25ffeb-6fd2-498b-a819-a089aa9b06db
-    position: {x: 255, y: 167}
+  - baseNodeGUID: 8cb69068-e533-4732-a7c6-7bff85e14d88
+    position: {x: 199, y: 193}
     conditionToTest: {fileID: 11400000, guid: 679e7dd7832f51845a47085ba33434bf, type: 2}
