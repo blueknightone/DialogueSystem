@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entryNode:
     baseNodeGUID: 108832e3-d68c-4a2a-8954-0371d881a7b3
-    position: {x: 100, y: 200}
+    position: {x: 58, y: -60}
   nodeLinkData:
   - baseNodeGuid: 108832e3-d68c-4a2a-8954-0371d881a7b3
     targetNodeGuid: 8cb69068-e533-4732-a7c6-7bff85e14d88
