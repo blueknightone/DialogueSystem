@@ -17,14 +17,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private DialogueGraphDataUtility _dialogueGraphDataUtility;
 
         /// <summary>
-        /// The filename to save/load the graph to.
-        /// </summary>
-        private string _fileName = "";
-
-        /// <summary>
         /// The GraphView instance.
         /// </summary>
         private DialogueGraphView _graphView;
+
+        private static DialogueContainer _dialogueContainer;
 
         /// <summary>
         /// The GraphView.MiniMap instance.
@@ -39,11 +36,12 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <summary>
         /// Opens the DialogueGraph editor window.
         /// </summary>
-        [MenuItem("Dialogue System/Open Visual Editor")]
-        private static void ShowWindow()
+        public static void ShowWindow(DialogueContainer dialogueContainer)
         {
+            _dialogueContainer = dialogueContainer;
+            
             DialogueGraph window = GetWindow<DialogueGraph>();
-            window.titleContent = new GUIContent("Dialogue Editor");
+            window.titleContent = new GUIContent(_dialogueContainer.name);
             window.Show();
         }
 
@@ -77,6 +75,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
             // Get the data utility so we can save and load.
             _dialogueGraphDataUtility = new DialogueGraphDataUtility(_graphView);
+
+            if (_dialogueContainer != null) _dialogueGraphDataUtility.LoadGraph(_dialogueContainer);
         }
 
         /// <summary>
@@ -89,28 +89,10 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             Toolbar toolbar = new Toolbar();
             toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
 
-            // TODO: Save/Load asset from item selected in inspector. See OnOpenAsset
-            // TextField to set the file to save/load from.
-            TextField fileNameTextField = new TextField("File Name")
-            {
-                value = "New Conversation"
-            };
-            fileNameTextField.style.minWidth = 150;
-            fileNameTextField.style.maxWidth = 200;
-            fileNameTextField.labelElement.style.minWidth = 0;
-            fileNameTextField.RegisterValueChangedCallback(evt => _fileName = evt.newValue);
-            toolbar.Add(fileNameTextField);
-
             // Button to save the asset
-            toolbar.Add(new ToolbarButton(() => { _dialogueGraphDataUtility.SaveGraph(fileNameTextField.value); })
+            toolbar.Add(new ToolbarButton(() => { _dialogueGraphDataUtility.SaveGraph(_dialogueContainer); })
             {
                 text = "Save Asset"
-            });
-
-            // Button to load the asset
-            toolbar.Add(new ToolbarButton(() => { _dialogueGraphDataUtility.LoadGraph(fileNameTextField.value); })
-            {
-                text = "Load Asset"
             });
 
             // Flexible spacer.

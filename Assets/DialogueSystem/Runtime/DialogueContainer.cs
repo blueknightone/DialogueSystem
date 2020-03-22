@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace lastmilegames.DialogueSystem
@@ -12,7 +13,11 @@ namespace lastmilegames.DialogueSystem
         /// <summary>
         /// The entry node for the conversation.
         /// </summary>
-        public BaseNodeData entryNode = new BaseNodeData();
+        public BaseNodeData entryNode = new BaseNodeData
+        {
+            baseNodeGUID = Guid.NewGuid().ToString(),
+            position = new Vector2(100, 200)
+        };
         
         /// <summary>
         /// A list of the links between nodes.

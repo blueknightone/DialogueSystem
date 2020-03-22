@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a08108e497d646b08215f88b69e361f0, type: 3}
+  m_Name: DialogueContainer
+  m_EditorClassIdentifier: 
+  entryNode:
+    baseNodeGUID: 14f7dc66-bdcc-4b4c-9e8d-dde8857b8fc2
+    position: {x: 100, y: 200}
+  nodeLinkData:
+  - baseNodeGuid: 14f7dc66-bdcc-4b4c-9e8d-dde8857b8fc2
+    targetNodeGuid: 9c736b39-b198-4e16-9876-d08b7fbaf51f
+  - baseNodeGuid: 9c736b39-b198-4e16-9876-d08b7fbaf51f
+    targetNodeGuid: 749f15c7-4f51-4dc2-a8ce-23d9cbb619a5
+  - baseNodeGuid: 749f15c7-4f51-4dc2-a8ce-23d9cbb619a5
+    targetNodeGuid: 0b3ed7c2-b90f-4041-8059-dd1aea95ed08
+  - baseNodeGuid: 749f15c7-4f51-4dc2-a8ce-23d9cbb619a5
+    targetNodeGuid: f25f84fd-37f0-41a5-b584-073b3931a028
+  dialogueNodeData:
+  - baseNodeGUID: 9c736b39-b198-4e16-9876-d08b7fbaf51f
+    position: {x: 303, y: 92}
+    dialogueText: 
+    speakerName: 
+    responses:
+    - 
+    conditionsToToggle:
+    - {fileID: 0}
+  - baseNodeGUID: 0b3ed7c2-b90f-4041-8059-dd1aea95ed08
+    position: {x: 906, y: 29}
+    dialogueText: 
+    speakerName: 
+    responses: []
+    conditionsToToggle: []
+  - baseNodeGUID: f25f84fd-37f0-41a5-b584-073b3931a028
+    position: {x: 928, y: 272}
+    dialogueText: 
+    speakerName: 
+    responses: []
+    conditionsToToggle: []
+  conditionNodeData:
+  - baseNodeGUID: 749f15c7-4f51-4dc2-a8ce-23d9cbb619a5
+    position: {x: 671, y: 203}
+    conditionToTest: {fileID: 0}
