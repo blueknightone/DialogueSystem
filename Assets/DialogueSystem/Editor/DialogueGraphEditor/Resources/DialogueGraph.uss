@@ -1,3 +1,7 @@
+DialogueGraphView {
+    background-color: #202020;
+}
+
 GridBackground {
     --grid-background-color: #282828;
     --line-color: rgba(193, 196, 192, 0.1);

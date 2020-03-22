@@ -89,17 +89,6 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             Toolbar toolbar = new Toolbar();
             toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
 
-            // Button to create new DialogueNodes.
-            toolbar.Add(new ToolbarButton(() => { _graphView.CreateNode(NodeType.Dialogue, position.size); })
-                {text = "Add Dialogue"});
-
-            // Button to create new ConditionNodes
-            toolbar.Add(new ToolbarButton(() => { _graphView.CreateNode(NodeType.Condition, position.size); })
-                {text = "Add Condition"});
-
-            // Flexible spacer.
-            toolbar.Add(new ToolbarSpacer() {flex = true});
-
             // TODO: Save/Load asset from item selected in inspector. See OnOpenAsset
             // TextField to set the file to save/load from.
             TextField fileNameTextField = new TextField("File Name")
@@ -124,6 +113,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 text = "Load Asset"
             });
 
+            // Flexible spacer.
+            toolbar.Add(new ToolbarSpacer() {flex = true});
+
             // Button to toggle the mini map visibility.
             ToolbarToggle toggleMiniMap = new ToolbarToggle {text = "Toggle MiniMap"};
             toggleMiniMap.RegisterValueChangedCallback(evt => { _miniMapEnabled = evt.newValue; });
@@ -136,9 +128,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// Creates the default instance of DialogueGraphView.
         /// </summary>
         /// <returns>Returns a default DialogueGraphView.</returns>
-        private static DialogueGraphView GenerateGraphView()
+        private DialogueGraphView GenerateGraphView()
         {
-            DialogueGraphView graphView = new DialogueGraphView
+            DialogueGraphView graphView = new DialogueGraphView(this)
             {
                 name = "Dialogue Graph"
             };
