@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,10 +14,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
     /// </summary>
     public class DialogueGraphView : GraphView
     {
+        private SearchWindowProvider _searchWindow;
         /// <summary>
         /// Sets the initial settings for the DialogueGraphView instance.
         /// </summary>
-        public DialogueGraphView()
+        public DialogueGraphView(EditorWindow editorWindow)
         {
             // Load the stylesheet.
             styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
@@ -28,12 +30,22 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             this.AddManipulator(new RectangleSelector());
 
             // Draw the grid.
-            GridBackground grid = new GridBackground();
-            Insert(0, grid);
-            grid.StretchToParentSize();
+            // GridBackground grid = new GridBackground();
+            // Insert(0, grid);
+            // grid.StretchToParentSize();
 
             // Create the start node.
             AddElement(GenerateEntryPointNode());
+
+            AddSearchWindow(editorWindow);
+        }
+
+        private void AddSearchWindow(EditorWindow editorWindow)
+        {
+            _searchWindow = ScriptableObject.CreateInstance<SearchWindowProvider>();
+            _searchWindow.Init(editorWindow, this);
+            nodeCreationRequest = context => 
+                SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
         }
 
         /// <summary>
@@ -60,28 +72,6 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         }
 
         /// <summary>
-        /// Creates a node of the given type.
-        /// </summary>
-        /// <param name="nodeType">The type of node to create.</param>
-        /// <param name="nodePosition">The position to create the node at.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the provided nodeType is invalid.</exception>
-        public void CreateNode(NodeType nodeType, Vector2 nodePosition)
-        {
-            // TODO: Create node at middle of GraphView (GraphView.viewTransform.position?)
-            switch (nodeType)
-            {
-                case NodeType.Condition:
-                    AddElement(CreateConditionNode(nodePosition));
-                    break;
-                case NodeType.Dialogue:
-                    AddElement(CreateDialogueNode(nodePosition));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, null);
-            }
-        }
-
-        /// <summary>
         /// Creates a basic node to serve as an entry point.
         /// </summary>
         /// <returns>Returns a node with a single output port.</returns>
@@ -105,11 +95,32 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         }
 
         /// <summary>
+        /// Creates a node of the given type.
+        /// </summary>
+        /// <param name="nodeType">The type of node to create.</param>
+        /// <param name="position">The position to create the node at.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the provided nodeType is invalid.</exception>
+        public void CreateNode(NodeType nodeType, Vector2 position)
+        {
+            switch (nodeType)
+            {
+                case NodeType.Condition:
+                    AddElement(CreateConditionNode(position));
+                    break;
+                case NodeType.Dialogue:
+                    AddElement(CreateDialogueNode(position));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, null);
+            }
+        }
+
+        /// <summary>
         /// Creates a new default ConditionNode at the given location.
         /// </summary>
         /// <param name="position"></param>
         /// <returns>A condition node with default values.</returns>
-        private static ConditionNode CreateConditionNode(Vector2 position)
+        private ConditionNode CreateConditionNode(Vector2 position)
         {
             ConditionNode node = new ConditionNode {title = "Condition"};
             node.SetPosition(new Rect(position, BaseNode.DefaultNodeSize));
@@ -148,8 +159,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             return new DialogueNode(OnClickRemoveOutputPort, nodeData);
         }
 
-        
-        public void OnClickRemoveOutputPort(Node node, Port port)
+
+        private void OnClickRemoveOutputPort(Node node, Port port)
         {
             // Find all the edges (connections) this port makes to others.
             IEnumerable<Edge> targetEdges = edges.ToList()
