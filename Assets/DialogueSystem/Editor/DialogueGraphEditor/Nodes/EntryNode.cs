@@ -1,4 +1,6 @@
-﻿namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
+﻿using UnityEngine;
+
+namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
     /// <summary>
     /// Represents the empty starting point for each Dialogue.

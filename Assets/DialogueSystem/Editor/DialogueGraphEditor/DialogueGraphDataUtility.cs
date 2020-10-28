@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -14,13 +15,24 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
     /// </summary>
     public class DialogueGraphDataUtility
     {
-        private readonly DialogueGraphView _targetGraphView;
-        private IEnumerable<Edge> Edges => _targetGraphView.edges.ToList();
-        private List<DialogueNode> _dialogueNodes = new List<DialogueNode>();
-        private List<ConditionNode> _conditionNodes = new List<ConditionNode>();
+        private DialogueGraphView _targetGraphView;
+        private IEnumerable<Edge> Edges => _targetGraphView == null ? new List<Edge>() : _targetGraphView.edges.ToList();
+        private List<DialogueNode> _dialogueNodes;
+        private List<ConditionNode> _conditionNodes;
         private EntryNode _entryNode;
 
+        public DialogueGraphDataUtility()
+        {
+            // Default constructor to just save container. Doesn't target a graph;
+            _targetGraphView = null;
+        }
+        
         public DialogueGraphDataUtility(DialogueGraphView targetGraphView)
+        {
+            _targetGraphView = targetGraphView;
+        }
+
+        public void SetTargetGraphView(DialogueGraphView targetGraphView)
         {
             _targetGraphView = targetGraphView;
         }
@@ -32,7 +44,24 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             CacheNodesFromGraph();
             SaveNodes(container);
             SaveNodeLinks(container);
-            WriteAssetFile(fileName, container);
+            WriteAssetFile(container, fileName);
+        }
+
+        public void SaveGraph(DialogueContainer container)
+        {
+            CacheNodesFromGraph();
+            SaveNodes(container);
+            SaveNodeLinks(container);
+
+            AssetDatabase.SaveAssets();
+        }
+
+        public void SaveGraph(string path, DialogueContainer container)
+        {
+            CacheNodesFromGraph();
+            SaveNodes(container);
+            SaveNodeLinks(container);
+            WriteAssetFile(container, path);
         }
 
         /// <summary>
@@ -40,6 +69,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// </summary>
         private void CacheNodesFromGraph()
         {
+            _entryNode = new EntryNode();
+            _dialogueNodes = new List<DialogueNode>();
+            _conditionNodes = new List<ConditionNode>();
+            
+            if (_targetGraphView == null) return;
             foreach (Node node in _targetGraphView.nodes.ToList())
             {
                 Type nodeType = node.GetType();
@@ -78,11 +112,13 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void CreateDialogueNodeData(DialogueContainer container)
         {
+            container.dialogueNodeData.Clear();
             // Create DialogueNodeData
             foreach (DialogueNode dialogueNode in _dialogueNodes)
             {
                 List<string> responses = new List<string>();
                 List<DialogueCondition> conditionsToToggle = new List<DialogueCondition>();
+
                 foreach (DialogueNodePort dialogueNodePort in dialogueNode.DialogueNodePorts)
                 {
                     responses.Add(dialogueNodePort.ResponseText);
@@ -103,6 +139,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void CreateConditionNodeData(DialogueContainer container)
         {
+            container.conditionNodeData.Clear();
             foreach (ConditionNode conditionNode in _conditionNodes)
             {
                 container.conditionNodeData.Add(new ConditionNodeData
@@ -117,6 +154,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private void SaveNodeLinks(DialogueContainer container)
         {
             if (!Edges.Any()) return; // Skip if there are no connections between nodes.
+            
+            container.nodeLinkData.Clear();
 
             // Find all connected nodes
             Edge[] connectedPorts = Edges.Where(port => port.input.node != null).ToArray();
@@ -127,6 +166,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 BaseNode outputNode = port.output.node as BaseNode;
                 BaseNode inputNode = port.input.node as BaseNode;
 
+                // Add data to list
                 container.nodeLinkData.Add(new NodeLinkData
                 {
                     baseNodeGuid = outputNode?.GUID,
@@ -138,18 +178,44 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <summary>
         /// Write the asset file to the top level resources folder.
         /// </summary>
-        /// <param name="filename">The name to give the asset file.</param>
         /// <param name="container">The DialogueContainer to write to the asset file.</param>
-        private void WriteAssetFile(string filename, DialogueContainer container)
+        /// <param name="path">The name to give the asset file.</param>
+        private void WriteAssetFile(DialogueContainer container, string path = "Assets/Resources")
         {
-            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+            string[] pathArray = path.Split('/');
+            string assetName = pathArray[pathArray.Length - 1];
+            var inAssetDirectory = false;
+            var assetPath = "";
+
+            // Build the absolute path relative to the project root.
+            for (var i = 0; i < pathArray.Length -1; i++)
             {
-                AssetDatabase.CreateFolder("Assets", "Resources");
+                if (pathArray[i] == "Assets")
+                {
+                    inAssetDirectory = true;
+                    continue;
+                }
+
+                if (!inAssetDirectory) continue;
+                assetPath += $"/{pathArray[i]}";
             }
 
-            AssetDatabase.CreateAsset(container, $"Assets/Resources/{filename}.asset");
+            bool validFolder = AssetDatabase.IsValidFolder("Assets" + assetPath);
+
+            if (!validFolder)
+            {
+                string[] assetPathArray = assetPath.Split('/');
+                for (var i = 1; i < assetPathArray.Length; i++)
+                {
+                    string parent = i == 1 ? "Assets/" : assetPathArray[i - 1];
+                    AssetDatabase.CreateFolder(parent, assetPathArray[i]);
+                }
+            }
+
+            AssetDatabase.CreateAsset(container, $"Assets/{assetPath}/{assetName}");
             AssetDatabase.SaveAssets();
         }
+
 
         public void LoadGraph(string fileName)
         {
@@ -161,6 +227,13 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                     "Target dialogue graph file does not exists!\nCheck the filename and try again.", "OK");
             }
 
+            ClearGraph(container);
+            CreateNodes(container);
+            ConnectNodes(container);
+        }
+
+        public void LoadGraph(DialogueContainer container)
+        {
             ClearGraph(container);
             CreateNodes(container);
             ConnectNodes(container);
@@ -207,46 +280,56 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void ConnectNodes(DialogueContainer container)
         {
+            if (!container.nodeLinkData.Any()) return;
+
             List<BaseNode> nodes = _targetGraphView.nodes.ToList().Cast<BaseNode>().ToList();
             foreach (BaseNode node in nodes)
             {
-                if (node is EntryNode entryNode)
+                switch (node)
                 {
                     // Connect entry node to targets
-                    string targetNodeGuid = container.nodeLinkData.First(data =>
-                        data.baseNodeGuid == entryNode.GUID).targetNodeGuid;
-                    BaseNode targetNode = nodes.First(x => x.GUID == targetNodeGuid);
-                    LinkNodes(
-                        (Port) entryNode.outputContainer[0],
-                        (Port) targetNode.inputContainer[0]
-                    );
-                }
-                // Connect dialogue nodes to targets
-                else if (node is DialogueNode dialogueNode)
-                {
-                    List<NodeLinkData> dialogueNodeConnections =
-                        container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
-                    for (int i = 0; i < dialogueNodeConnections.Count; i++)
+                    case EntryNode entryNode:
                     {
-                        string targetNodeGuid = dialogueNodeConnections[i].targetNodeGuid;
-                        BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                        string targetNodeGuid = container.nodeLinkData.First(data =>
+                            data.baseNodeGuid == entryNode.GUID).targetNodeGuid;
+                        BaseNode targetNode = nodes.First(x => x.GUID == targetNodeGuid);
                         LinkNodes(
-                            dialogueNode.DialogueNodePorts[i].Port,
+                            (Port) entryNode.outputContainer[0],
                             (Port) targetNode.inputContainer[0]
                         );
+                        break;
                     }
-                }
-                // Connect the rest of the nodes to their targets
-                // Works for anything that doesn't add a special way of handling ports.
-                else
-                {
-                    List<NodeLinkData> connections =
-                        container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
-                    for (int i = 0; i < connections.Count; i++)
+                    // Connect dialogue nodes to targets
+                    case DialogueNode dialogueNode:
                     {
-                        string targetNodeGuid = connections[i].targetNodeGuid;
-                        BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
-                        LinkNodes(node.outputContainer[i].Q<Port>(), (Port) targetNode.inputContainer[0]);
+                        List<NodeLinkData> dialogueNodeConnections =
+                            container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
+                        for (int i = 0; i < dialogueNodeConnections.Count; i++)
+                        {
+                            string targetNodeGuid = dialogueNodeConnections[i].targetNodeGuid;
+                            BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                            LinkNodes(
+                                dialogueNode.DialogueNodePorts[i].Port,
+                                (Port) targetNode.inputContainer[0]
+                            );
+                        }
+
+                        break;
+                    }
+                    // Connect the rest of the nodes to their targets
+                    // Works for anything that doesn't add a special way of handling ports.
+                    default:
+                    {
+                        List<NodeLinkData> connections =
+                            container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
+                        for (int i = 0; i < connections.Count; i++)
+                        {
+                            string targetNodeGuid = connections[i].targetNodeGuid;
+                            BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                            LinkNodes(node.outputContainer[i].Q<Port>(), (Port) targetNode.inputContainer[0]);
+                        }
+
+                        break;
                     }
                 }
             }
