@@ -48,9 +48,15 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         [MenuItem("Dialogue Editor/Open Editor Window")]
         public static void ShowEditor()
         {
-            dialogueContainer = CreateInstance<DialogueContainer>();
-            dialogueContainer.name = "New Dialogue";
+            dialogueContainer = Selection.activeObject as DialogueContainer;
+
             ShowWindow(dialogueContainer);
+        }
+
+        [MenuItem("Dialogue Editor/Open Editor Window", true)]
+        public static bool ValidateValidObjectSelected()
+        {
+            return Selection.activeObject is DialogueContainer;
         }
 
         [MenuItem("Dialogue Editor/New Dialogue Container")]
