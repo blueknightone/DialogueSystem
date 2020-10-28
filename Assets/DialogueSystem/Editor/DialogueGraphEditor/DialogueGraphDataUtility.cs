@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -14,13 +15,24 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
     /// </summary>
     public class DialogueGraphDataUtility
     {
-        private readonly DialogueGraphView _targetGraphView;
-        private IEnumerable<Edge> Edges => _targetGraphView.edges.ToList();
+        private DialogueGraphView _targetGraphView;
+        private IEnumerable<Edge> Edges => _targetGraphView == null ? new List<Edge>() : _targetGraphView.edges.ToList();
         private List<DialogueNode> _dialogueNodes;
         private List<ConditionNode> _conditionNodes;
         private EntryNode _entryNode;
 
+        public DialogueGraphDataUtility()
+        {
+            // Default constructor to just save container. Doesn't target a graph;
+            _targetGraphView = null;
+        }
+        
         public DialogueGraphDataUtility(DialogueGraphView targetGraphView)
+        {
+            _targetGraphView = targetGraphView;
+        }
+
+        public void SetTargetGraphView(DialogueGraphView targetGraphView)
         {
             _targetGraphView = targetGraphView;
         }
@@ -32,7 +44,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             CacheNodesFromGraph();
             SaveNodes(container);
             SaveNodeLinks(container);
-            WriteAssetFile(fileName, container);
+            WriteAssetFile(container, fileName);
         }
 
         public void SaveGraph(DialogueContainer container)
@@ -44,6 +56,14 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             AssetDatabase.SaveAssets();
         }
 
+        public void SaveGraph(string path, DialogueContainer container)
+        {
+            CacheNodesFromGraph();
+            SaveNodes(container);
+            SaveNodeLinks(container);
+            WriteAssetFile(container, path);
+        }
+
         /// <summary>
         /// Cache the nodes by looping though them and sorting them based on type
         /// </summary>
@@ -52,6 +72,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             _entryNode = new EntryNode();
             _dialogueNodes = new List<DialogueNode>();
             _conditionNodes = new List<ConditionNode>();
+            
+            if (_targetGraphView == null) return;
             foreach (Node node in _targetGraphView.nodes.ToList())
             {
                 Type nodeType = node.GetType();
@@ -156,16 +178,41 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <summary>
         /// Write the asset file to the top level resources folder.
         /// </summary>
-        /// <param name="filename">The name to give the asset file.</param>
         /// <param name="container">The DialogueContainer to write to the asset file.</param>
-        private void WriteAssetFile(string filename, DialogueContainer container)
+        /// <param name="path">The name to give the asset file.</param>
+        private void WriteAssetFile(DialogueContainer container, string path = "Assets/Resources")
         {
-            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+            string[] pathArray = path.Split('/');
+            string assetName = pathArray[pathArray.Length - 1];
+            var inAssetDirectory = false;
+            var assetPath = "";
+
+            // Build the absolute path relative to the project root.
+            for (var i = 0; i < pathArray.Length -1; i++)
             {
-                AssetDatabase.CreateFolder("Assets", "Resources");
+                if (pathArray[i] == "Assets")
+                {
+                    inAssetDirectory = true;
+                    continue;
+                }
+
+                if (!inAssetDirectory) continue;
+                assetPath += $"/{pathArray[i]}";
             }
 
-            AssetDatabase.CreateAsset(container, $"Assets/Resources/{filename}.asset");
+            bool validFolder = AssetDatabase.IsValidFolder("Assets" + assetPath);
+
+            if (!validFolder)
+            {
+                string[] assetPathArray = assetPath.Split('/');
+                for (var i = 1; i < assetPathArray.Length; i++)
+                {
+                    string parent = i == 1 ? "Assets/" : assetPathArray[i - 1];
+                    AssetDatabase.CreateFolder(parent, assetPathArray[i]);
+                }
+            }
+
+            AssetDatabase.CreateAsset(container, $"Assets/{assetPath}/{assetName}");
             AssetDatabase.SaveAssets();
         }
 

@@ -14,14 +14,14 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <summary>
         /// The data utility for saving/loading graphs.
         /// </summary>
-        private DialogueGraphDataUtility _dialogueGraphDataUtility;
+        private static DialogueGraphDataUtility dialogueGraphDataUtility;
 
         /// <summary>
         /// The GraphView instance.
         /// </summary>
         private DialogueGraphView _graphView;
 
-        private static DialogueContainer _dialogueContainer;
+        private static DialogueContainer dialogueContainer;
 
         /// <summary>
         /// The GraphView.MiniMap instance.
@@ -36,13 +36,54 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <summary>
         /// Opens the DialogueGraph editor window.
         /// </summary>
-        public static void ShowWindow(DialogueContainer dialogueContainer)
+        public static void ShowWindow(DialogueContainer container)
         {
-            _dialogueContainer = dialogueContainer;
+            dialogueContainer = container;
             
-            DialogueGraph window = GetWindow<DialogueGraph>();
-            window.titleContent = new GUIContent(_dialogueContainer.name);
+            var window = GetWindow<DialogueGraph>();
+            window.titleContent = new GUIContent(dialogueContainer.name);
             window.Show();
+        }
+        
+        [MenuItem("Dialogue Editor/Open Editor Window")]
+        public static void ShowEditor()
+        {
+            dialogueContainer = CreateInstance<DialogueContainer>();
+            dialogueContainer.name = "New Dialogue";
+            ShowWindow(dialogueContainer);
+        }
+
+        [MenuItem("Dialogue Editor/New Dialogue Container")]
+        public static void NewDialogue()
+        {
+            var container = CreateInstance<DialogueContainer>();
+            string path = EditorUtility.SaveFilePanel(
+                "New Dialogue Container",
+                "Assets/",
+                "New Dialogue Container.asset",
+                "asset"
+            );
+
+            if (path.Length == 0) return;
+
+            if (dialogueGraphDataUtility == null)
+            {
+                dialogueGraphDataUtility = new DialogueGraphDataUtility();
+            }
+            
+            dialogueGraphDataUtility.SaveGraph(path, container);
+
+            bool openDialogueEditor = EditorUtility.DisplayDialog(
+                "Open Dialogue Editor Now?",
+                "Would you like to open the Dialogue Editor and edit this conversation now?",
+                "Yes",
+                "No"
+            );
+
+            if (openDialogueEditor)
+            {
+                ShowWindow(container);
+            }
         }
 
         private void OnEnable()
@@ -74,9 +115,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             _graphView.Add(_miniMap);
 
             // Get the data utility so we can save and load.
-            _dialogueGraphDataUtility = new DialogueGraphDataUtility(_graphView);
+            dialogueGraphDataUtility = new DialogueGraphDataUtility(_graphView);
 
-            if (_dialogueContainer != null) _dialogueGraphDataUtility.LoadGraph(_dialogueContainer);
+            if (dialogueContainer != null) dialogueGraphDataUtility.LoadGraph(dialogueContainer);
         }
 
         /// <summary>
@@ -90,7 +131,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             toolbar.styleSheets.Add(Resources.Load<StyleSheet>("Toolbar"));
 
             // Button to save the asset
-            toolbar.Add(new ToolbarButton(() => { _dialogueGraphDataUtility.SaveGraph(_dialogueContainer); })
+            toolbar.Add(new ToolbarButton(() => { dialogueGraphDataUtility.SaveGraph(dialogueContainer); })
             {
                 text = "Save Asset"
             });

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace lastmilegames.DialogueSystem
@@ -18,7 +19,7 @@ namespace lastmilegames.DialogueSystem
             baseNodeGUID = Guid.NewGuid().ToString(),
             position = new Vector2(100, 200)
         };
-        
+
         /// <summary>
         /// A list of the links between nodes.
         /// </summary>
