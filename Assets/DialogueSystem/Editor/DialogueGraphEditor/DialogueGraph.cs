@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -48,11 +49,17 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         [MenuItem("Dialogue Editor/Open Editor Window")]
         [MenuItem("Assets/DialogueEditor/Open Editor Window")]
-        public static void ShowEditor()
+        public static bool ShowEditor()
         {
             dialogueContainer = Selection.activeObject as DialogueContainer;
 
-            ShowWindow(dialogueContainer);
+            if (dialogueContainer)
+            {
+                ShowWindow(dialogueContainer);
+                return true;
+            }
+
+            return false;
         }
 
         [MenuItem("Dialogue Editor/Open Editor Window", true)]
@@ -93,6 +100,21 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             {
                 ShowWindow(container);
             }
+        }
+
+        [OnOpenAsset]
+        public static bool OnOpenAsset(int instanceId, int line)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(instanceId);
+            var container = AssetDatabase.LoadAssetAtPath<DialogueContainer>(assetPath);
+
+            if (container)
+            {
+                ShowWindow(container);
+                return true;
+            }
+
+            return false;
         }
 
         private void OnEnable()
