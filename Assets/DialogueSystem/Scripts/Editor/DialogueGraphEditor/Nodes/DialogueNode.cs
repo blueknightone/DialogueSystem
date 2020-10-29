@@ -100,15 +100,14 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
             contentFoldout.contentContainer.Add(new VisualElement {name = "divider"});
 
             // The UIElements.TextField that contains the speaker's dialogue
-            TextField dialogueTextField = new TextField("Dialogue Text")
-            {
-                value = DialogueText
-            };
+            TextField dialogueTextField = new TextField("Dialogue Text") {value = DialogueText};
             dialogueTextField.RegisterValueChangedCallback(evt =>
             {
                 DialogueText = evt.newValue;
                 UpdateTitle();
             });
+            dialogueTextField.multiline = true;
+            dialogueTextField.AddToClassList("dialogueTextField");
             contentFoldout.contentContainer.Add(dialogueTextField);
             
             contentFoldout.contentContainer.Add(new VisualElement {name = "divider"});

@@ -21,6 +21,10 @@ DialogueNode #output .unity-base-field{
     white-space: normal;
 }
 
+DialogueNode .dialogueTextField TextInput{
+    max-width: 300px;
+}
+
 ConditionNode ObjectField {
     width: 200px;
 }
