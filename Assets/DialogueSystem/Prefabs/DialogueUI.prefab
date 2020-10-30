@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8786771133727377067}
   - component: {fileID: 8786771133727377060}
   - component: {fileID: 8786771133727377061}
+  - component: {fileID: 7560019262726077265}
   m_Layer: 5
   m_Name: DialogueUI
   m_TagString: Untagged
@@ -99,6 +100,24 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &7560019262726077265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8786771133727377062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661418d3488d423caf0369b884804cd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialoguePanel: {fileID: 8786771133576592612}
+  speakerNameText: {fileID: 8786771133160217323}
+  dialogueText: {fileID: 8786771132936344441}
+  choicesContentAreaTransform: {fileID: 8786771132893712695}
+  choiceButtonPrefab: {fileID: 2127265675250306917, guid: 817f820c1ec88924d929e1f0e1b267ce,
+    type: 3}
 --- !u!1001 &4701117872765820022
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -241,6 +260,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DialoguePanel
       objectReference: {fileID: 0}
+    - target: {fileID: 4093024421804513620, guid: f47a0840da8608d419e73e0266c19b2d,
+        type: 3}
+      propertyPath: m_Size
+      value: 0.86622816
+      objectReference: {fileID: 0}
     - target: {fileID: 4093024421945067970, guid: f47a0840da8608d419e73e0266c19b2d,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -255,6 +279,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093024422097686287, guid: f47a0840da8608d419e73e0266c19b2d,
+        type: 3}
+      propertyPath: m_text
+      value: So what's it to you, butthead. You know you've been looking for a, since
+        you're new here, I'm gonna cut you a break, today. So why don't you make
+        like a tree, and get out of here. What the hell is this? Pa, what is it?
+        What is it, Pa? No, Marty, we've already agreed that having information about
+        the future could be extremely dangerous. Even if your intentions are good,
+        they could backfire drastically. Whatever you've got to tell me I'll find
+        out through the natural course of time. Whoa, whoa, Biff, what's that?
       objectReference: {fileID: 0}
     - target: {fileID: 4093024422104820775, guid: f47a0840da8608d419e73e0266c19b2d,
         type: 3}
@@ -386,6 +421,36 @@ PrefabInstance:
 --- !u!224 &8786771133576592612 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4093024421794504850, guid: f47a0840da8608d419e73e0266c19b2d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4701117872765820022}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8786771133160217323 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4093024421958747805, guid: f47a0840da8608d419e73e0266c19b2d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4701117872765820022}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8786771132936344441 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4093024422097686287, guid: f47a0840da8608d419e73e0266c19b2d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4701117872765820022}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &8786771132893712695 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4093024422225186113, guid: f47a0840da8608d419e73e0266c19b2d,
     type: 3}
   m_PrefabInstance: {fileID: 4701117872765820022}
   m_PrefabAsset: {fileID: 0}
