@@ -17,7 +17,7 @@ namespace lastmilegames.DialogueSystem
         /// </summary>
         public BaseNodeData entryNode = new BaseNodeData
         {
-            baseNodeGuid = Guid.NewGuid().ToString(),
+            guid = Guid.NewGuid().ToString(),
             position = new Vector2(100, 200),
             type = NodeType.Entry
         };

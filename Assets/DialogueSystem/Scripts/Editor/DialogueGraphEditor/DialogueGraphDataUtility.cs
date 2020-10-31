@@ -64,7 +64,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 // If the entry node, reset the GUID and continue.
                 if (node is EntryNode entry)
                 {
-                    entry.Guid = container.entryNode.baseNodeGuid;
+                    entry.Guid = container.entryNode.guid;
                     entry.SetPosition(new Rect(container.entryNode.position, BaseNode.DefaultNodeSize));
                 }
                 else // disconnect the node, then remove the node.
@@ -118,7 +118,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             container.entryNode = new BaseNodeData
             {
-                baseNodeGuid = entryNode.Guid,
+                guid = entryNode.Guid,
                 position = entryNode.GetPosition().position,
                 type = entryNode.type
             };
@@ -141,7 +141,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
                 container.dialogueNodeData.Add(new DialogueNodeData
                 {
-                    baseNodeGuid = dialogueNode.Guid,
+                    guid = dialogueNode.Guid,
                     type = dialogueNode.type,
                     position = dialogueNode.GetPosition().position,
                     dialogueText = dialogueNode.DialogueText,
@@ -159,7 +159,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             {
                 container.conditionNodeData.Add(new ConditionNodeData
                 {
-                    baseNodeGuid = conditionNode.Guid,
+                    guid = conditionNode.Guid,
                     position = conditionNode.GetPosition().position,
                     conditionToTest = conditionNode.ConditionToTest,
                     type = conditionNode.type
@@ -242,7 +242,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             foreach (DialogueNodeData nodeData in container.dialogueNodeData)
             {
                 DialogueNode tempNode = targetGraphView.CreateDialogueNode(nodeData);
-                tempNode.Guid = nodeData.baseNodeGuid;
+                tempNode.Guid = nodeData.guid;
                 tempNode.SetPosition(new Rect(nodeData.position, BaseNode.DefaultNodeSize));
                 targetGraphView.AddElement(tempNode);
             }
@@ -250,7 +250,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             foreach (ConditionNodeData nodeData in container.conditionNodeData)
             {
                 ConditionNode tempNode = targetGraphView.CreateConditionNode(nodeData);
-                tempNode.Guid = nodeData.baseNodeGuid;
+                tempNode.Guid = nodeData.guid;
                 tempNode.SetPosition(new Rect(nodeData.position, BaseNode.DefaultNodeSize));
                 targetGraphView.AddElement(tempNode);
             }

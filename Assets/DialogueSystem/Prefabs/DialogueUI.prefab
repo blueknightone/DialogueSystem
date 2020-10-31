@@ -113,11 +113,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialoguePanel: {fileID: 8786771133576592612}
-  speakerNameText: {fileID: 8786771133160217323}
-  dialogueText: {fileID: 8786771132936344441}
+  speakerNameLabel: {fileID: 8786771133160217323}
+  dialogueLabel: {fileID: 8786771132936344441}
   choicesContentAreaTransform: {fileID: 8786771132893712695}
   choiceButtonPrefab: {fileID: 2127265675250306917, guid: 817f820c1ec88924d929e1f0e1b267ce,
     type: 3}
+  closeConversationLabelText: '[End Conversation]'
 --- !u!1001 &4701117872765820022
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -263,7 +264,17 @@ PrefabInstance:
     - target: {fileID: 4093024421804513620, guid: f47a0840da8608d419e73e0266c19b2d,
         type: 3}
       propertyPath: m_Size
-      value: 0.86622816
+      value: 0.86622804
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093024421804513620, guid: f47a0840da8608d419e73e0266c19b2d,
+        type: 3}
+      propertyPath: m_Value
+      value: 1.0000008
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093024421880669733, guid: f47a0840da8608d419e73e0266c19b2d,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4093024421945067970, guid: f47a0840da8608d419e73e0266c19b2d,
         type: 3}

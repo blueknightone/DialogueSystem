@@ -195,7 +195,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 2.1597e-41, z: 0, w: 0.000000005529728}
+  m_BoundingSphereOverride: {x: 0, y: 2.533e-41, z: 0, w: 9.403955e-38}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -299,7 +299,7 @@ MonoBehaviour:
         m_MethodName: PlayDialogue
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: d60a1e225c231b542adefee3303c984c,
+          m_ObjectArgument: {fileID: 11400000, guid: dd801a633ca8cda42b8ae8d25e17e64a,
             type: 2}
           m_ObjectArgumentAssemblyTypeName: lastmilegames.DialogueSystem.DialogueContainer,
             Assembly-CSharp
@@ -625,7 +625,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1745123921
 GameObject:
@@ -662,7 +662,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
 --- !u!114 &1745123923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -719,7 +719,7 @@ RectTransform:
   m_Children:
   - {fileID: 922203890}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -861,7 +861,7 @@ PrefabInstance:
     - target: {fileID: 8786771133727377066, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8786771133727377066, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
         type: 3}

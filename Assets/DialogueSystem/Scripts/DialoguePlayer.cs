@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using JetBrains.Annotations;
 using lastmilegames.DialogueSystem.NodeData;
 using TMPro;
 using UnityEngine;
@@ -14,15 +11,16 @@ namespace lastmilegames.DialogueSystem
     {
         // ReSharper disable RedundantDefaultMemberInitializer
         [SerializeField] private Transform dialoguePanel = default;
-        [SerializeField] private TMP_Text speakerNameText = default;
-        [SerializeField] private TMP_Text dialogueText = default;
+        [SerializeField] private TMP_Text speakerNameLabel = default;
+        [SerializeField] private TMP_Text dialogueLabel = default;
         [SerializeField] private Transform choicesContentAreaTransform = default;
         [SerializeField] private Button choiceButtonPrefab = default;
+
+        [SerializeField] private string closeConversationLabelText = "[End Conversation]";
         // ReSharper restore RedundantDefaultMemberInitializer
 
-        private DialogueContainer _dialogueContainer;
-        private List<BaseNodeData> allNodes;
-        
+        private DialogueContainer dialogueContainer;
+
         private void Awake()
         {
             dialoguePanel.gameObject.SetActive(false);
@@ -30,40 +28,131 @@ namespace lastmilegames.DialogueSystem
 
         public void PlayDialogue(DialogueContainer container)
         {
-            GetAllNodeBaseData(container);
+            if (container == null)
+            {
+                Debug.LogError("No dialogue provided by trigger. Aborting conversation.");
+                return;
+            }
 
-            BaseNodeData startingNode = GetNode(allNodes.First().baseNodeGuid);
+            dialogueContainer = container;
+
+            BaseNodeData startingNode = GetTargetNode(dialogueContainer.nodeLinkData.Find(data =>
+                data.baseNodeGuid == dialogueContainer.entryNode.guid));
 
             PlayNode(startingNode);
-            
             dialoguePanel.gameObject.SetActive(true);
         }
 
-        private void PlayNode(BaseNodeData nodeData)
+        private BaseNodeData GetTargetNode(NodeLinkData nodeLink)
         {
-            // TODO: Implement looking up node.
-            // Probably need to move NodeType out of editor and
-            // record target node type in base node data.
+            switch (nodeLink.targetNodeType)
+            {
+                case NodeType.NotSet:
+                    return null;
+                case NodeType.Entry:
+                    return null;
+                case NodeType.Condition:
+                    return dialogueContainer.conditionNodeData.Find(
+                        node => node.guid == nodeLink.targetNodeGuid);
+                case NodeType.Dialogue:
+                    return dialogueContainer.dialogueNodeData.Find(node =>
+                        node.guid == nodeLink.targetNodeGuid);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        private BaseNodeData GetNode(string guid)
+        private void PlayNode(BaseNodeData node)
         {
-            return allNodes.First(data => data.baseNodeGuid == guid);
+            switch (node.type)
+            {
+                case NodeType.NotSet:
+                    break;
+                case NodeType.Entry:
+                    break;
+                case NodeType.Condition:
+                    EvaluateConditionNode(node as ConditionNodeData);
+                    break;
+                case NodeType.Dialogue:
+                    DisplayDialogueNode(node as DialogueNodeData);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        private void GetAllNodeBaseData(DialogueContainer container)
+        private void DisplayDialogueNode(DialogueNodeData node)
         {
-            allNodes = new List<BaseNodeData> {container.entryNode};
+            speakerNameLabel.text = node.speakerName;
+            dialogueLabel.text = node.dialogueText;
 
-            foreach (ConditionNodeData nodeData in container.conditionNodeData)
+            ClearChoiceButtons();
+            
+            if (node.responses.Count == 0)
             {
-                allNodes.Add(nodeData);
+                Button endButton = Instantiate(choiceButtonPrefab, choicesContentAreaTransform);
+                endButton.GetComponentInChildren<TMP_Text>().text = closeConversationLabelText;
+                endButton.onClick.AddListener(() => dialoguePanel.gameObject.SetActive(false));
+            }
+            else
+            {
+                GenerateChoiceButtons(node);
             }
 
-            foreach (DialogueNodeData nodeData in container.dialogueNodeData)
+        }
+
+        private void ClearChoiceButtons()
+        {
+            foreach (Transform child in choicesContentAreaTransform)
             {
-                allNodes.Add(nodeData);
+                Destroy(child.gameObject);
             }
+        }
+
+        private void GenerateChoiceButtons(DialogueNodeData node)
+        {
+            List<NodeLinkData> nodeLinks = GetLinks(node.guid);
+
+            if (nodeLinks.Count != node.responses.Count)
+            {
+                Debug.LogError(
+                    $"Dialogue Node {node.guid} has mismatched number of links and responses. Aborting conversation.");
+                dialoguePanel.gameObject.SetActive(false);
+                return;
+            }
+
+            for (var i = 0; i < node.responses.Count; i++)
+            {
+                NodeLinkData link = nodeLinks[i];
+                string currentResponse = node.responses[i];
+                DialogueCondition conditionToToggle = node.conditionsToToggle[i];
+                Button button = Instantiate(choiceButtonPrefab, choicesContentAreaTransform);
+                button.GetComponentInChildren<TMP_Text>().text = currentResponse;
+                button.onClick.AddListener(() => OnButtonClick(link, conditionToToggle));
+            }
+        }
+
+        private void OnButtonClick(NodeLinkData linkData, DialogueCondition conditionToToggle)
+        {
+            if (conditionToToggle != null) conditionToToggle.ToggleValue();
+            
+            BaseNodeData nextNode = GetTargetNode(linkData);
+            
+            PlayNode(nextNode);
+        }
+
+        private void EvaluateConditionNode(ConditionNodeData node)
+        {
+            List<NodeLinkData> nextNodes = GetLinks(node.guid);
+
+            BaseNodeData nextNode = GetTargetNode(node.conditionToTest.Value ? nextNodes[0] : nextNodes[1]);
+            
+            PlayNode(nextNode);
+        }
+
+        private List<NodeLinkData> GetLinks(string guid)
+        {
+            return dialogueContainer.nodeLinkData.FindAll(link => link.baseNodeGuid == guid);
         }
     }
 }

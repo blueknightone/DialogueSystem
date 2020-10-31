@@ -64,7 +64,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <param name="nodeData"></param>
         public ConditionNode(ConditionNodeData nodeData)
         {
-            Guid = nodeData.baseNodeGuid;
+            Guid = nodeData.guid;
             type = NodeType.Condition;
             ConditionToTest = nodeData.conditionToTest;
 

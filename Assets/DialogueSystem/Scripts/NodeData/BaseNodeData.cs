@@ -9,7 +9,7 @@ namespace lastmilegames.DialogueSystem.NodeData
     [Serializable]
     public class BaseNodeData
     {
-        public string baseNodeGuid;
+        public string guid;
         public Vector2 position;
         public NodeType type;
     }
