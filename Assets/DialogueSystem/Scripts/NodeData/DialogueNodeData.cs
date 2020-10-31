@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lastmilegames.DialogueSystem
+namespace lastmilegames.DialogueSystem.NodeData
 {
     /// <summary>
     /// Represents the data a DialogueNode should track.

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using lastmilegames.DialogueSystem.NodeData;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;

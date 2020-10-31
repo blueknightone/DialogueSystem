@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lastmilegames.DialogueSystem
+namespace lastmilegames.DialogueSystem.NodeData
 {
     /// <summary>
     /// Represents the data that a ConditionNode should save.

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using lastmilegames.DialogueSystem.NodeData;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -48,6 +49,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// </summary>
         public ConditionNode()
         {
+            type = NodeType.Condition;
+            
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
             
             GenerateOutputPorts();
@@ -61,7 +64,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <param name="nodeData"></param>
         public ConditionNode(ConditionNodeData nodeData)
         {
-            GUID = nodeData.baseNodeGUID;
+            Guid = nodeData.baseNodeGuid;
+            type = NodeType.Condition;
             ConditionToTest = nodeData.conditionToTest;
 
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));

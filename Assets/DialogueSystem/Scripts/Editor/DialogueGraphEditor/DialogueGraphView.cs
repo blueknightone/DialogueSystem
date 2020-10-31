@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
+using lastmilegames.DialogueSystem.NodeData;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;

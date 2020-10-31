@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using lastmilegames.DialogueSystem.NodeData;
+using UnityEngine;
 
 namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
 {
@@ -9,6 +10,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
     {
         public EntryNode()
         {
+            type = NodeType.Entry;
             topContainer.Remove(inputContainer);
         }
     }

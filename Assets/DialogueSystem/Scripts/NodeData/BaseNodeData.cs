@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace lastmilegames.DialogueSystem
+namespace lastmilegames.DialogueSystem.NodeData
 {
     /// <summary>
     /// Base class for serializable node data. Represents the data all nodes should track.
@@ -9,7 +9,8 @@ namespace lastmilegames.DialogueSystem
     [Serializable]
     public class BaseNodeData
     {
-        public string baseNodeGUID;
+        public string baseNodeGuid;
         public Vector2 position;
+        public NodeType type;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
+using lastmilegames.DialogueSystem.NodeData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,7 +32,7 @@ namespace lastmilegames.DialogueSystem
         {
             GetAllNodeBaseData(container);
 
-            BaseNodeData startingNode = GetNode(allNodes.First().baseNodeGUID);
+            BaseNodeData startingNode = GetNode(allNodes.First().baseNodeGuid);
 
             PlayNode(startingNode);
             
@@ -47,7 +48,7 @@ namespace lastmilegames.DialogueSystem
 
         private BaseNodeData GetNode(string guid)
         {
-            return allNodes.First(data => data.baseNodeGUID == guid);
+            return allNodes.First(data => data.baseNodeGuid == guid);
         }
 
         private void GetAllNodeBaseData(DialogueContainer container)

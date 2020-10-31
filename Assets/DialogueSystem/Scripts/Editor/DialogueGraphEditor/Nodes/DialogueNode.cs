@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using lastmilegames.DialogueSystem.NodeData;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -36,6 +37,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <param name="onClickRemovePort">An action delegate called when the remove port button is clicked.</param>
         public DialogueNode(Action<Node, Port> onClickRemovePort) : base(onClickRemovePort)
         {
+            type = NodeType.Dialogue;
+            
             // Associate stylesheet
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
 
@@ -51,11 +54,13 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <param name="nodeData">The node data to populate the node with.</param>
         public DialogueNode(Action<Node, Port> onClickRemovePort, DialogueNodeData nodeData) : base(onClickRemovePort)
         {
+            type = NodeType.Dialogue;
+            
             // Associate stylesheet
             styleSheets.Add(Resources.Load<StyleSheet>("Node"));
 
             // Set the properties from the passed in data.
-            GUID = nodeData.baseNodeGUID;
+            Guid = nodeData.baseNodeGuid;
             DialogueText = nodeData.dialogueText;
             SpeakerName = nodeData.speakerName;
 

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Security;
 using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
+using lastmilegames.DialogueSystem.NodeData;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
@@ -15,36 +16,21 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
     /// </summary>
     public class DialogueGraphDataUtility
     {
-        private DialogueGraphView _targetGraphView;
-        private IEnumerable<Edge> Edges => _targetGraphView == null ? new List<Edge>() : _targetGraphView.edges.ToList();
-        private List<DialogueNode> _dialogueNodes;
-        private List<ConditionNode> _conditionNodes;
-        private EntryNode _entryNode;
+        private readonly DialogueGraphView targetGraphView;
+        private IEnumerable<Edge> Edges => targetGraphView == null ? new List<Edge>() : targetGraphView.edges.ToList();
+        private List<DialogueNode> dialogueNodes;
+        private List<ConditionNode> conditionNodes;
+        private EntryNode entryNode;
 
         public DialogueGraphDataUtility()
         {
             // Default constructor to just save container. Doesn't target a graph;
-            _targetGraphView = null;
+            targetGraphView = null;
         }
-        
+
         public DialogueGraphDataUtility(DialogueGraphView targetGraphView)
         {
-            _targetGraphView = targetGraphView;
-        }
-
-        public void SetTargetGraphView(DialogueGraphView targetGraphView)
-        {
-            _targetGraphView = targetGraphView;
-        }
-
-        public void SaveGraph(string fileName)
-        {
-            DialogueContainer container = ScriptableObject.CreateInstance<DialogueContainer>();
-
-            CacheNodesFromGraph();
-            SaveNodes(container);
-            SaveNodeLinks(container);
-            WriteAssetFile(container, fileName);
+            this.targetGraphView = targetGraphView;
         }
 
         public void SaveGraph(DialogueContainer container)
@@ -64,32 +50,59 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             WriteAssetFile(container, path);
         }
 
+        public void LoadGraph(DialogueContainer container)
+        {
+            ClearGraph(container);
+            CreateNodes(container);
+            ConnectNodes(container);
+        }
+
+        private void ClearGraph(DialogueContainer container)
+        {
+            foreach (Node node in targetGraphView.nodes.ToList())
+            {
+                // If the entry node, reset the GUID and continue.
+                if (node is EntryNode entry)
+                {
+                    entry.Guid = container.entryNode.baseNodeGuid;
+                    entry.SetPosition(new Rect(container.entryNode.position, BaseNode.DefaultNodeSize));
+                }
+                else // disconnect the node, then remove the node.
+                {
+                    Edges.Where(edge => edge.input.node == node).ToList()
+                        .ForEach(edge => targetGraphView.RemoveElement(edge));
+
+                    targetGraphView.RemoveElement(node);
+                }
+            }
+        }
+
         /// <summary>
         /// Cache the nodes by looping though them and sorting them based on type
         /// </summary>
         private void CacheNodesFromGraph()
         {
-            _entryNode = new EntryNode();
-            _dialogueNodes = new List<DialogueNode>();
-            _conditionNodes = new List<ConditionNode>();
-            
-            if (_targetGraphView == null) return;
-            foreach (Node node in _targetGraphView.nodes.ToList())
+            entryNode = new EntryNode();
+            dialogueNodes = new List<DialogueNode>();
+            conditionNodes = new List<ConditionNode>();
+
+            if (targetGraphView == null) return;
+            foreach (Node node in targetGraphView.nodes.ToList())
             {
                 Type nodeType = node.GetType();
 
                 // Sort the nodes into their respective objects.
                 if (nodeType == typeof(EntryNode))
                 {
-                    _entryNode = node as EntryNode;
+                    entryNode = node as EntryNode;
                 }
                 else if (nodeType == typeof(DialogueNode))
                 {
-                    _dialogueNodes.Add(node as DialogueNode);
+                    dialogueNodes.Add(node as DialogueNode);
                 }
                 else if (nodeType == typeof(ConditionNode))
                 {
-                    _conditionNodes.Add(node as ConditionNode);
+                    conditionNodes.Add(node as ConditionNode);
                 }
             }
         }
@@ -105,8 +118,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             container.entryNode = new BaseNodeData
             {
-                baseNodeGUID = _entryNode.GUID,
-                position = _entryNode.GetPosition().position
+                baseNodeGuid = entryNode.Guid,
+                position = entryNode.GetPosition().position,
+                type = entryNode.type
             };
         }
 
@@ -114,7 +128,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             container.dialogueNodeData.Clear();
             // Create DialogueNodeData
-            foreach (DialogueNode dialogueNode in _dialogueNodes)
+            foreach (DialogueNode dialogueNode in dialogueNodes)
             {
                 List<string> responses = new List<string>();
                 List<DialogueCondition> conditionsToToggle = new List<DialogueCondition>();
@@ -127,7 +141,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
                 container.dialogueNodeData.Add(new DialogueNodeData
                 {
-                    baseNodeGUID = dialogueNode.GUID,
+                    baseNodeGuid = dialogueNode.Guid,
+                    type = dialogueNode.type,
                     position = dialogueNode.GetPosition().position,
                     dialogueText = dialogueNode.DialogueText,
                     speakerName = dialogueNode.SpeakerName,
@@ -140,13 +155,14 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private void CreateConditionNodeData(DialogueContainer container)
         {
             container.conditionNodeData.Clear();
-            foreach (ConditionNode conditionNode in _conditionNodes)
+            foreach (ConditionNode conditionNode in conditionNodes)
             {
                 container.conditionNodeData.Add(new ConditionNodeData
                 {
-                    baseNodeGUID = conditionNode.GUID,
+                    baseNodeGuid = conditionNode.Guid,
                     position = conditionNode.GetPosition().position,
-                    conditionToTest = conditionNode.ConditionToTest
+                    conditionToTest = conditionNode.ConditionToTest,
+                    type = conditionNode.type
                 });
             }
         }
@@ -154,7 +170,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private void SaveNodeLinks(DialogueContainer container)
         {
             if (!Edges.Any()) return; // Skip if there are no connections between nodes.
-            
+
             container.nodeLinkData.Clear();
 
             // Find all connected nodes
@@ -163,15 +179,19 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             // Iterate through each connection
             foreach (Edge port in connectedPorts)
             {
-                BaseNode outputNode = port.output.node as BaseNode;
-                BaseNode inputNode = port.input.node as BaseNode;
+                var outputNode = (BaseNode) port.output.node;
+                var inputNode = (BaseNode) port.input.node;
 
                 // Add data to list
                 container.nodeLinkData.Add(new NodeLinkData
                 {
-                    baseNodeGuid = outputNode?.GUID,
-                    targetNodeGuid = inputNode?.GUID
+                    baseNodeGuid = outputNode.Guid,
+                    baseNodeType = outputNode.type,
+                    targetNodeGuid = inputNode.Guid,
+                    targetNodeType = inputNode.type
                 });
+
+                Debug.Break();
             }
         }
 
@@ -180,7 +200,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// </summary>
         /// <param name="container">The DialogueContainer to write to the asset file.</param>
         /// <param name="path">The name to give the asset file.</param>
-        private void WriteAssetFile(DialogueContainer container, string path = "Assets/Resources")
+        private static void WriteAssetFile(Object container, string path = "Assets/Resources")
         {
             string[] pathArray = path.Split('/');
             string assetName = pathArray[pathArray.Length - 1];
@@ -188,7 +208,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             var assetPath = "";
 
             // Build the absolute path relative to the project root.
-            for (var i = 0; i < pathArray.Length -1; i++)
+            for (var i = 0; i < pathArray.Length - 1; i++)
             {
                 if (pathArray[i] == "Assets")
                 {
@@ -217,64 +237,22 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         }
 
 
-        public void LoadGraph(string fileName)
-        {
-            DialogueContainer container = Resources.Load<DialogueContainer>(fileName);
-
-            if (container == null)
-            {
-                EditorUtility.DisplayDialog("File Not Found",
-                    "Target dialogue graph file does not exists!\nCheck the filename and try again.", "OK");
-            }
-
-            ClearGraph(container);
-            CreateNodes(container);
-            ConnectNodes(container);
-        }
-
-        public void LoadGraph(DialogueContainer container)
-        {
-            ClearGraph(container);
-            CreateNodes(container);
-            ConnectNodes(container);
-        }
-
-        private void ClearGraph(DialogueContainer container)
-        {
-            foreach (Node node in _targetGraphView.nodes.ToList())
-            {
-                // If the entry node, reset the GUID and continue.
-                if (node is EntryNode entryNode)
-                {
-                    entryNode.GUID = container.entryNode.baseNodeGUID;
-                    entryNode.SetPosition(new Rect(container.entryNode.position, BaseNode.DefaultNodeSize));
-                }
-                else // disconnect the node, then remove the node.
-                {
-                    Edges.Where(edge => edge.input.node == node).ToList()
-                        .ForEach(edge => _targetGraphView.RemoveElement(edge));
-
-                    _targetGraphView.RemoveElement(node);
-                }
-            }
-        }
-
         private void CreateNodes(DialogueContainer container)
         {
             foreach (DialogueNodeData nodeData in container.dialogueNodeData)
             {
-                DialogueNode tempNode = _targetGraphView.CreateDialogueNode(nodeData);
-                tempNode.GUID = nodeData.baseNodeGUID;
+                DialogueNode tempNode = targetGraphView.CreateDialogueNode(nodeData);
+                tempNode.Guid = nodeData.baseNodeGuid;
                 tempNode.SetPosition(new Rect(nodeData.position, BaseNode.DefaultNodeSize));
-                _targetGraphView.AddElement(tempNode);
+                targetGraphView.AddElement(tempNode);
             }
 
             foreach (ConditionNodeData nodeData in container.conditionNodeData)
             {
-                ConditionNode tempNode = _targetGraphView.CreateConditionNode(nodeData);
-                tempNode.GUID = nodeData.baseNodeGUID;
+                ConditionNode tempNode = targetGraphView.CreateConditionNode(nodeData);
+                tempNode.Guid = nodeData.baseNodeGuid;
                 tempNode.SetPosition(new Rect(nodeData.position, BaseNode.DefaultNodeSize));
-                _targetGraphView.AddElement(tempNode);
+                targetGraphView.AddElement(tempNode);
             }
         }
 
@@ -282,34 +260,34 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             if (!container.nodeLinkData.Any()) return;
 
-            List<BaseNode> nodes = _targetGraphView.nodes.ToList().Cast<BaseNode>().ToList();
+            List<BaseNode> nodes = targetGraphView.nodes.ToList().Cast<BaseNode>().ToList();
             foreach (BaseNode node in nodes)
             {
                 switch (node)
                 {
                     // Connect entry node to targets
-                    case EntryNode entryNode:
+                    case EntryNode entry:
                     {
                         string targetNodeGuid = container.nodeLinkData.First(data =>
-                            data.baseNodeGuid == entryNode.GUID).targetNodeGuid;
-                        BaseNode targetNode = nodes.First(x => x.GUID == targetNodeGuid);
+                            data.baseNodeGuid == entry.Guid).targetNodeGuid;
+                        BaseNode targetNode = nodes.First(x => x.Guid == targetNodeGuid);
                         LinkNodes(
-                            (Port) entryNode.outputContainer[0],
+                            (Port) entry.outputContainer[0],
                             (Port) targetNode.inputContainer[0]
                         );
                         break;
                     }
                     // Connect dialogue nodes to targets
-                    case DialogueNode dialogueNode:
+                    case DialogueNode dialogue:
                     {
                         List<NodeLinkData> dialogueNodeConnections =
-                            container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
-                        for (int i = 0; i < dialogueNodeConnections.Count; i++)
+                            container.nodeLinkData.Where(data => data.baseNodeGuid == node.Guid).ToList();
+                        for (var i = 0; i < dialogueNodeConnections.Count; i++)
                         {
                             string targetNodeGuid = dialogueNodeConnections[i].targetNodeGuid;
-                            BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                            BaseNode targetNode = nodes.First(n => n.Guid == targetNodeGuid);
                             LinkNodes(
-                                dialogueNode.DialogueNodePorts[i].Port,
+                                dialogue.DialogueNodePorts[i].Port,
                                 (Port) targetNode.inputContainer[0]
                             );
                         }
@@ -321,11 +299,11 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                     default:
                     {
                         List<NodeLinkData> connections =
-                            container.nodeLinkData.Where(data => data.baseNodeGuid == node.GUID).ToList();
-                        for (int i = 0; i < connections.Count; i++)
+                            container.nodeLinkData.Where(data => data.baseNodeGuid == node.Guid).ToList();
+                        for (var i = 0; i < connections.Count; i++)
                         {
                             string targetNodeGuid = connections[i].targetNodeGuid;
-                            BaseNode targetNode = nodes.First(n => n.GUID == targetNodeGuid);
+                            BaseNode targetNode = nodes.First(n => n.Guid == targetNodeGuid);
                             LinkNodes(node.outputContainer[i].Q<Port>(), (Port) targetNode.inputContainer[0]);
                         }
 
@@ -337,7 +315,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
         private void LinkNodes(Port output, Port input)
         {
-            Edge tempEdge = new Edge
+            var tempEdge = new Edge
             {
                 output = output,
                 input = input
@@ -346,7 +324,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             tempEdge.input.Connect(tempEdge);
             tempEdge.output.Connect(tempEdge);
 
-            _targetGraphView.Add(tempEdge);
+            targetGraphView.Add(tempEdge);
         }
     }
 }

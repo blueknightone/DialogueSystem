@@ -1,4 +1,5 @@
 ﻿using System;
+using lastmilegames.DialogueSystem.NodeData;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -19,7 +20,12 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <summary>
         /// The node's unique identifier. 
         /// </summary>
-        public string GUID { get; set; }
+        public string Guid { get; set; }
+
+        /// <summary>
+        /// Represents the type of node.
+        /// </summary>
+        public NodeType type;
 
         /// <summary>
         /// The action delegate to call when the remove port button is clicked.
@@ -31,7 +37,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// </summary>
         protected BaseNode()
         {
-            GUID = Guid.NewGuid().ToString();
+            Guid = System.Guid.NewGuid().ToString();
+            type = NodeType.NotSet;
 
             GeneratePort(this, "Input", Direction.Input, Port.Capacity.Multi);
             inputContainer.Q<Port>().portColor = Color.cyan;
@@ -40,7 +47,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
                 Debug.LogWarningFormat(
                     "No remove port action set on node {0} port {1}",
                     port.parent.IndexOf(port),
-                    GUID
+                    Guid
                 );
             };
         }
@@ -51,7 +58,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes
         /// <param name="onClickRemovePort">Event that fires when remove port button is clicked.</param>
         protected BaseNode(Action<Node, Port> onClickRemovePort)
         {
-            GUID = Guid.NewGuid().ToString();
+            Guid = System.Guid.NewGuid().ToString();
             this.onClickRemovePort = onClickRemovePort;
 
             // Create input port
