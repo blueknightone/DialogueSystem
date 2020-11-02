@@ -29,15 +29,16 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             List<SearchTreeEntry> tree = new List<SearchTreeEntry>
             {
                 new SearchTreeGroupEntry(new GUIContent("Create Element")),
-                new SearchTreeGroupEntry(new GUIContent("Content"), 1),
+                // Un-comment the line below to create a group
+                // new SearchTreeGroupEntry(new GUIContent("Content"), 1),
                 new SearchTreeEntry(new GUIContent("Dialogue", _indentationIcon))
                 {
-                    level = 2,
+                    level = 1,
                     userData = NodeType.Dialogue
                 },
                 new SearchTreeEntry(new GUIContent("Condition", _indentationIcon))
                 {
-                    level = 2,
+                    level = 1,
                     userData = NodeType.Condition
                 }
             };

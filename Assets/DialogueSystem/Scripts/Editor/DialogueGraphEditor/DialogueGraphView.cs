@@ -31,9 +31,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             this.AddManipulator(new RectangleSelector());
 
             // Draw the grid.
-            // GridBackground grid = new GridBackground();
-            // Insert(0, grid);
-            // grid.StretchToParentSize();
+            GridBackground grid = new GridBackground();
+            Insert(0, grid);
+            grid.StretchToParentSize();
 
             // Create the start node.
             AddElement(GenerateEntryPointNode());
