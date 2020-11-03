@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
@@ -29,6 +29,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// The GraphView.MiniMap instance.
         /// </summary>
         private MiniMap _miniMap;
+
+        private Blackboard _blackboard;
 
         /// <summary>
         /// Mini map visibility.
@@ -145,6 +147,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             _miniMap = GenerateMiniMap();
             _graphView.Add(_miniMap);
 
+            _blackboard = GenerateBlackboard();
+            _graphView.Add(_blackboard);
+
             // Get the data utility so we can save and load.
             dialogueGraphDataUtility = new DialogueGraphDataUtility(_graphView);
 
@@ -199,9 +204,43 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <returns>Returns a default mini map to add to the DialogueGraphView.</returns>
         private MiniMap GenerateMiniMap()
         {
-            MiniMap miniMap = new MiniMap {visible = _miniMapEnabled};
-            miniMap.SetPosition(new Rect(10, 30, 200, 140));
+            var miniMap = new MiniMap {visible = _miniMapEnabled};
+            Vector2 coords = _graphView.contentViewContainer.WorldToLocal(new Vector2(this.maxSize.x - 10, 30));
+            miniMap.SetPosition(new Rect(coords.x, coords.y, 200, 140));
             return miniMap;
+        }
+
+        private Blackboard GenerateBlackboard()
+        {
+            var blackboard = new Blackboard(_graphView)
+            {
+                scrollable = true
+            };
+
+            blackboard.Add(new BlackboardSection {title = "Exposed Properties"});
+            blackboard.SetPosition(new Rect(10, 30, 200, 300));
+            blackboard.addItemRequested = board => _graphView.AddPropertyToBlackboard(new ExposedProperty());
+            blackboard.editTextRequested = (board, element, newValue) =>
+            {
+                string oldPropertyName = ((BlackboardField) element).text;
+                if (_graphView.exposedProperties.Any(x => x.propertyName == newValue))
+                {
+                    EditorUtility.DisplayDialog(
+                        "Error",
+                        "A property with the name \"{newValue}\" already exists.",
+                        "OK"
+                    );
+                    return;
+                }
+
+                int propertyIndex = _graphView.exposedProperties.FindIndex(x => x.propertyName == oldPropertyName);
+                _graphView.exposedProperties[propertyIndex].propertyName = newValue;
+                ((BlackboardField) element).text = newValue;
+            };
+
+            _graphView.blackboard = blackboard;
+
+            return blackboard;
         }
     }
 }
