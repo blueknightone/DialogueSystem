@@ -36,5 +36,10 @@ namespace lastmilegames.DialogueSystem
         /// A list of conditions that can alter the flow of the conversation.
         /// </summary>
         public List<ConditionNodeData> conditionNodeData = new List<ConditionNodeData>();
+
+        /// <summary>
+        /// A list of exposed properties that can be used to dynamically update dialogue text.
+        /// </summary>
+        public List<ExposedProperty> exposedProperties = new List<ExposedProperty>();
     }
 }

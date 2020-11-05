@@ -20,6 +20,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private IEnumerable<Edge> Edges => targetGraphView == null ? new List<Edge>() : targetGraphView.edges.ToList();
         private List<DialogueNode> dialogueNodes;
         private List<ConditionNode> conditionNodes;
+        private List<ExposedProperty> exposedProperties;
         private EntryNode entryNode;
 
         public DialogueGraphDataUtility()
@@ -33,28 +34,37 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             this.targetGraphView = targetGraphView;
         }
 
+        /// <summary>
+        /// Saves the currently loaded graph to a DialogueContainer asset file.
+        /// </summary>
+        /// <param name="container">The existing <code>DialogueContainer</code> to save to.</param>
         public void SaveGraph(DialogueContainer container)
         {
-            CacheNodesFromGraph();
+            CacheGraphData();
             SaveNodes(container);
             SaveNodeLinks(container);
 
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// Creates a new <code>DialogueContainer</code> asset at the provided location and then saves the current graph to the asset.
+        /// </summary>
+        /// <param name="path">The path for the <code>DialogueContainer</code>. This can be relative to the project root or absolute.</param>
+        /// <param name="container">The <code>DialogueContainer</code> to save to the asset.</param>
         public void SaveGraph(string path, DialogueContainer container)
         {
-            CacheNodesFromGraph();
-            SaveNodes(container);
-            SaveNodeLinks(container);
             WriteAssetFile(container, path);
+        
+            SaveGraph(container);
         }
 
-        public void LoadGraph(DialogueContainer container)
+        public void LoadGraph(DialogueContainer container, BlackboardProvider blackboardProvider)
         {
             ClearGraph(container);
             CreateNodes(container);
             ConnectNodes(container);
+            LoadExposedProperties(container, blackboardProvider);
         }
 
         private void ClearGraph(DialogueContainer container)
@@ -80,11 +90,12 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// <summary>
         /// Cache the nodes by looping though them and sorting them based on type
         /// </summary>
-        private void CacheNodesFromGraph()
+        private void CacheGraphData()
         {
             entryNode = new EntryNode();
             dialogueNodes = new List<DialogueNode>();
             conditionNodes = new List<ConditionNode>();
+            exposedProperties = new List<ExposedProperty>();
 
             if (targetGraphView == null) return;
             foreach (Node node in targetGraphView.nodes.ToList())
@@ -105,6 +116,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                     conditionNodes.Add(node as ConditionNode);
                 }
             }
+
+            exposedProperties = targetGraphView.exposedProperties;
         }
 
         private void SaveNodes(DialogueContainer container)
@@ -325,6 +338,13 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             tempEdge.output.Connect(tempEdge);
 
             targetGraphView.Add(tempEdge);
+        }
+
+        private void LoadExposedProperties(DialogueContainer container, BlackboardProvider blackboardProvider)
+        {
+            targetGraphView.exposedProperties.Clear();
+            targetGraphView.exposedProperties  = container.exposedProperties;
+            blackboardProvider.RefreshProperties();
         }
     }
 }

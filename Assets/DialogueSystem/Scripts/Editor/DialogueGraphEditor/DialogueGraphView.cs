@@ -5,11 +5,8 @@ using lastmilegames.DialogueSystem.DialogueGraphEditor.Nodes;
 using lastmilegames.DialogueSystem.NodeData;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Edge = UnityEditor.Experimental.GraphView.Edge;
-using Node = UnityEditor.Experimental.GraphView.Node;
 
 namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
@@ -28,6 +25,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         /// </summary>
         public DialogueGraphView(EditorWindow editorWindow)
         {
+            if (exposedProperties == null) exposedProperties = new List<ExposedProperty>();
+            
             // Load the stylesheet.
             styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
 
@@ -194,48 +193,6 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             node.outputContainer.Remove(port);
             node.RefreshExpandedState();
             node.RefreshPorts();
-        }
-
-        public void AddPropertyToBlackboard(ExposedProperty exposedProperty)
-        {
-            if (exposedProperties == null) exposedProperties = new List<ExposedProperty>();
-
-            string localPropertyName = exposedProperty.propertyName;
-            string localPropertyValue = exposedProperty.propertyValue;
-            
-            while (exposedProperties.Any(p => p.propertyName == localPropertyName))
-            {
-                localPropertyName = $"{localPropertyName} (10)";
-            }
-            
-            var property = new ExposedProperty
-            {
-                propertyName = localPropertyName,
-                propertyValue = localPropertyValue
-            };
-            exposedProperties.Add(property);
-
-            var container = new VisualElement();
-            var blackboardField = new BlackboardField {text = property.propertyName, typeText = "string property"};
-            container.Add(blackboardField);
-            
-            
-            var propertyValueTextField = new TextField("Value:")
-            {
-                value = property.propertyValue
-            };
-            propertyValueTextField.style.width = new StyleLength(StyleKeyword.Auto);
-            
-            propertyValueTextField.RegisterValueChangedCallback(evt =>
-            {
-                int changingPropertyIndex = exposedProperties.FindIndex(x => x.propertyName == property.propertyName);
-                exposedProperties[changingPropertyIndex].propertyValue = evt.newValue;
-            });
-            
-            var blackboardValueRow = new BlackboardRow(propertyValueTextField, propertyValueTextField);
-            container.Add(blackboardValueRow);
-            
-            blackboard.Add(container);
         }
     }
 }
