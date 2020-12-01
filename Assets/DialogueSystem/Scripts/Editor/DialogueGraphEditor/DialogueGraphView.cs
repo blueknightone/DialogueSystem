@@ -15,12 +15,18 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
     /// </summary>
     public class DialogueGraphView : GraphView
     {
+        public List<ExposedProperty> exposedProperties;
+        public Blackboard blackboard;
+
         private SearchWindowProvider _searchWindow;
+
         /// <summary>
         /// Sets the initial settings for the DialogueGraphView instance.
         /// </summary>
         public DialogueGraphView(EditorWindow editorWindow)
         {
+            if (exposedProperties == null) exposedProperties = new List<ExposedProperty>();
+            
             // Load the stylesheet.
             styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
 
@@ -31,9 +37,9 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             this.AddManipulator(new RectangleSelector());
 
             // Draw the grid.
-            // GridBackground grid = new GridBackground();
-            // Insert(0, grid);
-            // grid.StretchToParentSize();
+            GridBackground grid = new GridBackground();
+            Insert(0, grid);
+            grid.StretchToParentSize();
 
             // Create the start node.
             AddElement(GenerateEntryPointNode());
@@ -45,7 +51,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         {
             _searchWindow = ScriptableObject.CreateInstance<SearchWindowProvider>();
             _searchWindow.Init(editorWindow, this);
-            nodeCreationRequest = context => 
+            nodeCreationRequest = context =>
                 SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
         }
 
@@ -79,7 +85,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
         private static EntryNode GenerateEntryPointNode()
         {
             EntryNode node = new EntryNode {title = "Start"};
-            
+
             // Remove the entry port
             node.inputContainer.RemoveAt(0);
 

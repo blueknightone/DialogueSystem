@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using lastmilegames.DialogueSystem.NodeData;
 using TMPro;
 using UnityEngine;
@@ -83,8 +84,8 @@ namespace lastmilegames.DialogueSystem
 
         private void DisplayDialogueNode(DialogueNodeData node)
         {
-            speakerNameLabel.text = node.speakerName;
-            dialogueLabel.text = node.dialogueText;
+            speakerNameLabel.text = ProcessExposedProperties(node.speakerName);
+            dialogueLabel.text = ProcessExposedProperties(node.dialogueText);
 
             ClearChoiceButtons();
             
@@ -99,6 +100,18 @@ namespace lastmilegames.DialogueSystem
                 GenerateChoiceButtons(node);
             }
 
+        }
+
+        private string ProcessExposedProperties(string nodeDialogueText)
+        {
+            string processedText = nodeDialogueText;
+
+            foreach (ExposedProperty property in dialogueContainer.exposedProperties)
+            {
+                processedText = processedText.Replace(property.propertyName, property.propertyValue);
+            }
+
+            return processedText;
         }
 
         private void ClearChoiceButtons()
