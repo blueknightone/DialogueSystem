@@ -16,6 +16,20 @@ MonoBehaviour:
     guid: a33806d1-7d80-451c-884f-562e57b6511c
     position: {x: 100, y: 200}
     type: 1
-  nodeLinkData: []
-  dialogueNodeData: []
+  nodeLinkData:
+  - baseNodeGuid: a33806d1-7d80-451c-884f-562e57b6511c
+    baseNodeType: 1
+    targetNodeGuid: a0215b2b-b5d7-4c56-93e0-06314487e6a7
+    targetNodeType: 3
+  dialogueNodeData:
+  - guid: a0215b2b-b5d7-4c56-93e0-06314487e6a7
+    position: {x: 266, y: 192}
+    type: 3
+    dialogueText: Hello @@PLAYERNAME@@.
+    speakerName: Developer
+    responses: []
+    conditionsToToggle: []
   conditionNodeData: []
+  exposedProperties:
+  - propertyName: '@@PLAYERNAME@@'
+    propertyValue: John

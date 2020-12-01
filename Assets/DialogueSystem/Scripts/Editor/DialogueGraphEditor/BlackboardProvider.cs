@@ -9,8 +9,6 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 {
     public class BlackboardProvider
     {
-        public Blackboard Blackboard { get; private set; }
-
         private readonly DialogueGraphView graphView;
 
         public BlackboardProvider(DialogueGraphView graphView)
@@ -24,6 +22,8 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
                 editTextRequested = EditTextRequested
             };
         }
+
+        public Blackboard Blackboard { get; private set; }
 
         public void RefreshProperties()
         {
@@ -59,7 +59,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
             var property = new ExposedProperty();
             property.propertyName = ValidateName(property.propertyName);
             graphView.exposedProperties.Add(property);
-            
+
             blackboard.Add(GenerateBlackboardField(property));
         }
 
@@ -75,6 +75,7 @@ namespace lastmilegames.DialogueSystem.DialogueGraphEditor
 
             var propertyValueTextField = new TextField("Value:");
             propertyValueTextField.Q(className: "unity-label").style.minWidth = 50;
+            propertyValueTextField.value = property.propertyValue;
             propertyValueTextField.RegisterValueChangedCallback(evt =>
             {
                 int changingPropertyIndex = graphView.exposedProperties.FindIndex(
