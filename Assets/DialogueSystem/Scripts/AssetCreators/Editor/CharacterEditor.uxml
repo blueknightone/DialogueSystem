@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:engine="UnityEngine.UIElements"
+        xsi:noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+>
+    <!-- Character -->
+    <engine:Label text="Dialogue Character" class="heading"/>
+    <engine:VisualElement class="container">
+        <engine:Label text="General Config" class="subheading"/>
+        <engine:TextField name="characterName" label="Character Name"/>
+    </engine:VisualElement>
+
+    <!-- Character Sprites -->
+    <engine:VisualElement class="container">
+        <engine:Foldout class="subheading" text="Character Sprites">
+            <engine:VisualElement class="buttonRow">
+                <engine:Button name="btnAddSprite" text="Add Sprite"/>
+                <engine:Button name="btnRemoveAll" text="Remove All"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="spriteList"/>
+        </engine:Foldout>
+    </engine:VisualElement>
+</engine:UXML>

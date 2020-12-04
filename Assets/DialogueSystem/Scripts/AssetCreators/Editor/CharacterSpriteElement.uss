@@ -1,0 +1,48 @@
+.spriteRow {
+    border-width: 2px;
+    border-color: black;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.spriteContainer {
+    width: 60px;
+    height: 60px;
+}
+
+.spriteImage {
+    position: absolute;
+    -unity-background-scale-mode: scale-and-crop;
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+}
+
+.spriteBackground {
+    position: absolute;
+    border-width: 1px;
+    border-color: #000;
+    width: 55px;
+    height: 55px;
+}
+
+.fieldContainer {
+    flex-grow: 1;
+}
+
+.spriteField {
+    display: flex;
+    flex-direction: row;
+}
+
+.spriteField .unity-label {
+    min-width: 75px;
+    max-width: 150px;
+}
+
+.spriteField .unity-base-field__input {
+    flex-grow: 1;
+}
