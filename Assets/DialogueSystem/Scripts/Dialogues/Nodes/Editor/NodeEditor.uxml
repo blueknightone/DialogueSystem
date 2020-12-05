@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <engine:UXML
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:engine="UnityEngine.UIElements"
+        xmlns:engine="UnityEngine.UIElements" xmlns="UnityEditor.UIElements"
         xsi:noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
->
-    <engine:Label text="Hello World! From UXML"/>
+        xsi:schemaLocation="UnityEditor.UIElements file:///D:/RiderProjects/DialogueSystem/UIElementsSchema/UnityEditor.UIElements.xsd">
+    <engine:Box class="danger-box">
+        <engine:VisualElement class="row">
+            <engine:Image class="danger-box__icon"/>
+            <engine:Label class="danger-box__warning"
+                          text="This information set automatically by graph editor. Changing these may cause unexpected problems"/>
+        </engine:VisualElement>
+        <engine:VisualElement class="row">
+            <EnumField name="enumNodeType" label="Node Type"/>
+            <Vector2IntField name="v2Position" label="Node Position"/>
+        </engine:VisualElement>
+    </engine:Box>
 </engine:UXML>
