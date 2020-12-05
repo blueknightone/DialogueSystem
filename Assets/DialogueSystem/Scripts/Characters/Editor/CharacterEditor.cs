@@ -1,10 +1,9 @@
 using System.Linq;
-using lastmilegames.DialogueSystem.AssetCreators.Characters;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace lastmilegames.DialogueSystem.AssetCreators
+namespace lastmilegames.DialogueSystem.Characters
 {
     [CustomEditor(typeof(Character))]
     public class CharacterEditor : Editor

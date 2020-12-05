@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace lastmilegames.DialogueSystem.AssetCreators
+namespace lastmilegames.DialogueSystem.Characters
 {
     public static class Utilities
     {

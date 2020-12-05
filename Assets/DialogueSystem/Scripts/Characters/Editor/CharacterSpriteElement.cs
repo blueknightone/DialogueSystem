@@ -1,10 +1,9 @@
-using lastmilegames.DialogueSystem.AssetCreators.Characters;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace lastmilegames.DialogueSystem.AssetCreators
+namespace lastmilegames.DialogueSystem.Characters
 {
     public class CharacterSpriteElement : VisualElement
     {

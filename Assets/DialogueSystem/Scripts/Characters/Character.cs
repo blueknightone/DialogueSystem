@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace lastmilegames.DialogueSystem.AssetCreators.Characters
+namespace lastmilegames.DialogueSystem.Characters
 {
     [CreateAssetMenu(fileName = "New Character", menuName = "Dialogue System/New Character", order = 0)]
     public class Character : ScriptableObject

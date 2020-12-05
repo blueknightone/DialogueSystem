@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace lastmilegames.DialogueSystem.AssetCreators.Characters
+namespace lastmilegames.DialogueSystem.Characters
 {
     public class CharacterSprite : ScriptableObject
     {
