@@ -9,10 +9,13 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
         [SerializeField] protected NodeType type = NodeType.None;
 
         protected abstract void OnEnable();
-        public NodeType Type => type;
         public List<string> Children => children;
 
+        public NodeType Type => type;
+
 #if UNITY_EDITOR
+        public string DeveloperNotes => developerNotes;
+        [SerializeField] private string developerNotes = "";
         public Vector2 Position => position;
         [SerializeField] protected Vector2 position = Vector2.zero;
 
@@ -40,6 +43,11 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
         public void SetNodeType(NodeType newType)
         {
             type = newType;
+        }
+
+        public void SetDevNote(string newNote)
+        {
+            developerNotes = newNote;
         }
 #endif
     }

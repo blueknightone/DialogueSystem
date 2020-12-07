@@ -4,15 +4,6 @@
         xmlns:engine="UnityEngine.UIElements" xmlns="UnityEditor.UIElements"
         xsi:noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
         xsi:schemaLocation="UnityEditor.UIElements file:///D:/RiderProjects/DialogueSystem/UIElementsSchema/UnityEditor.UIElements.xsd">
-    <engine:Box class="danger-box safe" name="boxDanger">
-        <engine:VisualElement class="danger-box-message">
-            <engine:Image class="danger-box-message__icon" name="dangerBoxIcon"/>
-            <engine:Label class="danger-box-message__text"
-                          text="This information set automatically by the editor. Changing these values may result in unintended behavior."/>
-        </engine:VisualElement>
-
-        <ToolbarToggle text="Toggle Danger Zone Safety" name="tglSafety" class="danger-box__safety"/>
-        <EnumField class="danger-box__field" name="enumNodeType" label="Node Type"/>
-        <Vector2Field class="danger-box__field" name="v2Position" label="Node Position"/>
-    </engine:Box>
+    <engine:TextField name="txtDevNotes" multiline="true" class="multiline-text-field" label="Developer Notes"/>
+    <Vector2Field class="vector-field" name="v2Position" label="Node Position"/>
 </engine:UXML>
