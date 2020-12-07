@@ -4,5 +4,5 @@
         xmlns:engine="UnityEngine.UIElements"
         xsi:noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
 >
-    <engine:Label text="Hello World! From UXML"/>
+    <engine:Label text="DialogueNodeEditor"/>
 </engine:UXML>

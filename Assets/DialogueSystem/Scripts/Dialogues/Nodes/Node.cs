@@ -6,8 +6,7 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
     public abstract class Node : ScriptableObject, INode
     {
         [SerializeField] protected List<string> children = new List<string>();
-
-        protected NodeType type = NodeType.None;
+        [SerializeField] protected NodeType type = NodeType.None;
 
         protected abstract void OnEnable();
         public NodeType Type => type;
@@ -36,6 +35,11 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
         public void SetPosition(Vector2 newPosition)
         {
             position = newPosition;
+        }
+
+        public void SetNodeType(NodeType newType)
+        {
+            type = newType;
         }
 #endif
     }
