@@ -16,11 +16,11 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
             var elementRoot = new VisualElement();
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
                 "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/DialogueNodeEditor.uxml");
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/DialogueNodeEditor.uss");
-
             visualTree.CloneTree(elementRoot);
-            elementRoot.styleSheets.Add(styleSheet);
+
+            // var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+            //     "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/DialogueNodeEditor.uss");
+            // elementRoot.styleSheets.Add(styleSheet);
 
             var objCharacterField = elementRoot.Q<ObjectField>("objCharacterField");
             objCharacterField.objectType = typeof(Character);

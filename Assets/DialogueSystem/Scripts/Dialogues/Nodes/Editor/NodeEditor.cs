@@ -20,6 +20,10 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
 
         public override VisualElement CreateInspectorGUI()
         {
+            var globalStyles = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/_global.uss");
+            root.styleSheets.Add(globalStyles);
+
             return root;
         }
 
@@ -31,11 +35,11 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
 
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
                 "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/NodeEditor.uxml");
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/NodeEditor.uss");
-
             visualTree.CloneTree(elementRoot);
-            elementRoot.styleSheets.Add(styleSheet);
+
+            // var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+            //     "Assets/DialogueSystem/Scripts/Dialogues/Nodes/Editor/NodeEditor.uss");
+            // elementRoot.styleSheets.Add(styleSheet);
 
             var txtDevNotes = elementRoot.Q<TextField>("txtDevNotes");
             txtDevNotes.value = node.DeveloperNotes;

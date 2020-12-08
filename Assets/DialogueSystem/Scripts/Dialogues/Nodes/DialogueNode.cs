@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace lastmilegames.DialogueSystem.Dialogues.Nodes
 {
-    [CreateAssetMenu]
     public class DialogueNode : Node
     {
         protected override void OnEnable()

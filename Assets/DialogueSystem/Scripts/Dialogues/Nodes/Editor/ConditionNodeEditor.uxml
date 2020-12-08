@@ -5,9 +5,9 @@
         xmlns:editor="UnityEditor.UIElements"
         xsi:noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
 >
-    <engine:Label text="Dialogue Node Options" class="heading"/>
+    <engine:Label text="Condition Node Options" class="heading"/>
     <engine:VisualElement class="container">
-        <editor:ObjectField name="objCharacterField" label="Speaker"/>
-        <engine:TextField class="multiline-text-field" name="txtDialogue" multiline="true" label="Dialogue"/>
+        <editor:ObjectField name="objConditionField" label="Condition"/>
+        <engine:Toggle name="boolConditionValue" label="Initial Value"/>
     </engine:VisualElement>
 </engine:UXML>
