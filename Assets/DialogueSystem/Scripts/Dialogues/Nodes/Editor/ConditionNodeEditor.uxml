@@ -7,6 +7,7 @@
 >
     <engine:Label text="Condition Node Options" class="heading"/>
     <engine:VisualElement class="container">
+        <editor:EnumField name="enumNodeFunctionField" label="Function"/>
         <editor:ObjectField name="objConditionField" label="Condition"/>
         <engine:Toggle name="boolConditionValue" label="Initial Value"/>
     </engine:VisualElement>

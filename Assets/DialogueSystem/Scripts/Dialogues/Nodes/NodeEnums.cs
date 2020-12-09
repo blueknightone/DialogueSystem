@@ -7,7 +7,7 @@
         Condition,
         Event,
         JumpToNode,
-        PlayNewDialogue,
+        PlayNewDialogue
     }
 
     public enum NodeFunction

@@ -1,4 +1,5 @@
 using lastmilegames.DialogueSystem.Conditions;
+using lastmilegames.DialogueSystem.Utilities;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -23,7 +24,17 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
 
             var boolConditionValueField = elementRoot.Q<Toggle>();
             boolConditionValueField.value = cNode.Condition && cNode.Condition.InitialValue;
-            ToggleField(boolConditionValueField, cNode.Condition != null);
+            boolConditionValueField.RegisterValueChangedCallback(evt =>
+            {
+                cNode.Condition.SetValue(evt.newValue);
+                boolConditionValueField.ToggleFieldVisibility(cNode.Condition != null);
+            });
+            boolConditionValueField.ToggleFieldVisibility(cNode.Condition != null);
+
+            var enumNodeFunctionField = elementRoot.Q<EnumField>("enumNodeFunctionField");
+            enumNodeFunctionField.value = cNode.NodeFunction;
+            enumNodeFunctionField.RegisterValueChangedCallback(evt =>
+                cNode.SetFunction((NodeFunction) evt.newValue));
 
             var objConditionField = elementRoot.Q<ObjectField>("objConditionField");
             objConditionField.objectType = typeof(Condition);
@@ -31,15 +42,10 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
             objConditionField.RegisterValueChangedCallback(evt =>
             {
                 cNode.SetCondition((Condition) evt.newValue);
-                ToggleField(boolConditionValueField, cNode.Condition != null);
+                boolConditionValueField.ToggleFieldVisibility(cNode.Condition != null);
             });
 
             return elementRoot;
-        }
-
-        private void ToggleField(VisualElement field, bool condition)
-        {
-            field.style.display = condition ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }
