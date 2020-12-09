@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace lastmilegames.DialogueSystem.Dialogues.Nodes
 {
-    [CreateAssetMenu]
     public class ConditionNode : Node
     {
         [SerializeField] private Condition condition = null;

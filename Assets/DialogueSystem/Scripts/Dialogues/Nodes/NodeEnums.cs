@@ -5,7 +5,9 @@
         None,
         Dialogue,
         Condition,
-        Event
+        Event,
+        JumpToNode,
+        PlayNewDialogue,
     }
 
     public enum NodeFunction

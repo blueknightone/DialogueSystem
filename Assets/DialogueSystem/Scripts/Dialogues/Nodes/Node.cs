@@ -16,6 +16,7 @@ namespace lastmilegames.DialogueSystem.Dialogues.Nodes
 #if UNITY_EDITOR
         public string DeveloperNotes => developerNotes;
         [SerializeField] private string developerNotes = "";
+
         public Vector2 Position => position;
         [SerializeField] protected Vector2 position = Vector2.zero;
 
