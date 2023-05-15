@@ -1,0 +1,35 @@
+.container {
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.heading {
+    margin-bottom: 5px;
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+Label.subheading,
+Foldout.subheading > Toggle .unity-label {
+    border-bottom-width: 1px;
+    border-bottom-color: #909090;
+    margin: 10px 0;
+    padding-bottom: 5px;
+    -unity-font-style: italic;
+    width: 100%;
+}
+
+Foldout.subheading .unity-toggle__checkmark {
+    margin-top: 12px;
+}
+
+.buttonRow {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 10px;
+}
+
+.buttonRow Button {
+    flex-grow: 1;
+}

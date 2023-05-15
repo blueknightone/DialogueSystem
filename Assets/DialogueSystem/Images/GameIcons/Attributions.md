@@ -1,0 +1,1 @@
+﻿"Hazard sign icon" (hazard-sign.png) by (Lorc)[https://lorcblog.blogspot.com/] under CC BY 3.0

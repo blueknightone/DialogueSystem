@@ -38,13 +38,13 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.574817, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 11
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -294,20 +294,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 922203892}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8786771133028197972}
-        m_MethodName: PlayDialogue
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: dd801a633ca8cda42b8ae8d25e17e64a,
-            type: 2}
-          m_ObjectArgumentAssemblyTypeName: lastmilegames.DialogueSystem.DialogueContainer,
-            Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &922203892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -741,7 +728,7 @@ PrefabInstance:
     - target: {fileID: 8786771132893712695, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000018605962
+      value: -0.00007994529
       objectReference: {fileID: 0}
     - target: {fileID: 8786771132936344443, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
         type: 3}
@@ -751,7 +738,7 @@ PrefabInstance:
     - target: {fileID: 8786771132936344443, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00009074141
+      value: -0.000049769158
       objectReference: {fileID: 0}
     - target: {fileID: 8786771132947378257, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
         type: 3}
@@ -1023,17 +1010,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7560019262726077265, guid: 4d8914cb6b33dc34e86ba2b8caea414c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4d8914cb6b33dc34e86ba2b8caea414c, type: 3}
---- !u!114 &8786771133028197972 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7560019262726077265, guid: 4d8914cb6b33dc34e86ba2b8caea414c,
-    type: 3}
-  m_PrefabInstance: {fileID: 8786771133028197971}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 661418d3488d423caf0369b884804cd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
